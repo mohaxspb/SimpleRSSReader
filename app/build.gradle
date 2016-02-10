@@ -17,10 +17,44 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    //robospice
+    compile 'com.octo.android.robospice:robospice:1.4.14'
+    compile 'com.octo.android.robospice:robospice-ormlite:1.4.14'
+    //ormLite
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
+    //OkHttp
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    //Jsoup
+    compile 'org.jsoup:jsoup:1.8.3'
+    //materialDialogs
+    compile('com.afollestad.material-dialogs:core:0.8.4.2@aar') {
+        transitive = true
+    }
+    //materialDialogs
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+    //UIL
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    //fresco (facebook image loader lib)
+    compile 'com.facebook.fresco:fresco:0.9.0'
+    repositories { mavenCentral() }
 }

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_settings">Настройки</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_key_on">Вкл</string>
+    <string name="pref_key_off">Выкл</string>
+
+    <!-- Design settings -->
+    <string name="pref_header_design_title">Внешний вид</string>
+    <string name="pref_header_design_summary">Ночной режим, шрифты etc</string>
+    <string name="pref_design_key_night_mode">pref_design_key_night_mode</string>
+    <string name="pref_design_key_list_style">pref_design_key_list_style</string>
+    <string name="pref_design_key_art_card_style">pref_design_key_art_card_style</string>
+    <string name="pref_design_art_card_category_title">Настройка карточки статьи</string>
+    <string name="pref_design_art_card_shown_info">Отображаемая информация</string>
+    <string name="pref_design_key_art_card_image">pref_design_key_art_card_image</string>
+
+    <string name="pref_design_key_text_size">pref_design_key_text_size</string>
+    <string name="text_size_warning">Изменения вступят в силу после поворота экрана!</string>
+    <string name="text_size_title">Размер текста</string>
+    <string name="text_size_summary">Размер текста в карточках статей и в самих статьях</string>
+    <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>
+    <string name="text_size_ui">Размер текста в карточках статей</string>
+    <string name="pref_design_key_text_size_article">pref_design_key_text_size_article</string>
+    <string name="text_size_article">Размер  текста в статьях</string>
+
+    <string name="pref_design_key_art_card_more_actions">pref_design_key_art_card_more_actions</string>
+    <string name="pref_design_key_art_card_preview_show">pref_design_key_art_card_preview_show</string>
+
+    <string name="pref_design_main_category_title">Основные</string>
+    <string name="pref_design_key_col_num">pref_design_key_col_num</string>
+    <string name="pref_design_title_col_num">Число колонок</string>
+
+    <string name="pref_design_key_tablet_mode">pref_design_key_tablet_mode</string>
+    <string name="pref_design_title_tablet_mode">Планшетный режим</string>
+
+    <string-array name="pref_design_col_num_entries">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="pref_design_col_num_values">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <!--<string name="text_size_comments">Размер  текста комментариев</string>-->
+    <!-- settings for Notifications -->
+    <string name="pref_header_notifications_title">Уведомления</string>
+    <string name="pref_header_notifications_summary">Разрешить, звук, переодичность etc</string>
+    <string name="pref_notifications_key_enable">pref_notifications_key_enable</string>
+    <!-- settings for about -->
+    <string name="pref_about_list_key">pref_about_list_key</string>
+    <string name="pref_header_about_summary">Ссылки, обратная связь, версия etc</string>
+    <string name="pref_header_about_title">О приложении</string>
+    <string name="pref_about_list_title">Оцените приложение!</string>
+
+    <string-array name="pref_about_list_titles">
+        <item>Ужасно</item>
+        <item>Плохо</item>
+        <item>С пивом покатит</item>
+        <item>Хорошо</item>
+        <item>Заткнись и возьми мои деньги!</item>
+    </string-array>
+    <string-array name="pref_about_list_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string name="pref_about_version_key">pref_about_version_key</string>
+    <string name="pref_about_version_title">Текущая версия - 0.0.42</string>
+    <string name="pref_about_version_summary">Почему бы не повесить сюда пасхалку?..</string>
+
+    <string name="pref_about_github_key">pref_about_github_key</string>
+    <string name="pref_about_github_title">Ссылка на GitHub</string>
+    <string name="pref_about_github_summary">Откроется браузер</string>
+
+    <!-- settings for SystemSetting -->
+    <string name="pref_header_system_title">Системные</string>
+    <string name="pref_header_system_summary">Обновление при запуске и т.д.</string>
+    <string name="pref_system_key_autorenew">pref_system_key_autorenew</string>
+    <string name="pref_system_autorenew_summary">Обновление при запуске</string>
+    <string name="pref_design_key_art_card_preview_short">pref_design_key_art_card_preview_short</string>
+    <string name="pref_design_key_category_in_cats_or_tags">pref_design_key_category_in_cats_or_tags</string>
+    <string name="pref_design_main_category_key">pref_design_main_category_key</string>
+</resources>

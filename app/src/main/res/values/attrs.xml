@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="settingsIcon" format="reference"/>
+    <attr name="commentsIcon" format="reference"/>
+    <attr name="shareIcon" format="reference"/>
+    <attr name="readIcon" format="reference"/>
+    <attr name="unreadIcon" format="reference"/>
+    <attr name="defaultImage" format="reference"/>
+    <attr name="deleteIcon" format="reference"/>
+    <attr name="nightModeIcon" format="reference"/>
+    <attr name="dashboardIcon" format="reference"/>
+    <attr name="viewModuleIcon" format="reference"/>
+    <attr name="textFormatIcon" format="reference"/>
+    <attr name="textSizeIcon" format="reference"/>
+
+    <attr name="openInBrowserIcon" format="reference"/>
+    <attr name="mailToMeIcon" format="reference"/>
+    <attr name="tabletIcon" format="reference"/>
+    <attr name="archiveIcon" format="reference"/>
+    <attr name="pagesIcon" format="reference"/>
+    <attr name="verticalAlignCenterIcon" format="reference"/>
+    <attr name="clearIcon" format="reference"/>
+    <attr name="createIcon" format="reference"/>
+    <attr name="favoriteStarIcon" format="reference"/>
+
+</resources>
