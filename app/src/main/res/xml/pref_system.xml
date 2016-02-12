@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <MultiSelectListPreference
+        android:defaultValue="@array/rss_default_urls"
+        android:dialogTitle="@string/pref_system_rss_urls_title"
+        android:entries="@array/rss_default_titles"
+        android:entryValues="@array/rss_default_urls"
+        android:key="@string/pref_system_key_rss_urls"
+        android:summary="@string/pref_system_rss_urls_title"
+        android:title="@string/pref_system_rss_urls_title"
+        />
+
+</PreferenceScreen>

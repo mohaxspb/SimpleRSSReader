@@ -90,4 +90,7 @@
     <string name="pref_design_key_art_card_preview_short">pref_design_key_art_card_preview_short</string>
     <string name="pref_design_key_category_in_cats_or_tags">pref_design_key_category_in_cats_or_tags</string>
     <string name="pref_design_main_category_key">pref_design_main_category_key</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="pref_system_key_rss_urls">pref_system_key_rss_urls</string>
+    <string name="pref_system_rss_urls_title">Избранные RSS ленты</string>
 </resources>
