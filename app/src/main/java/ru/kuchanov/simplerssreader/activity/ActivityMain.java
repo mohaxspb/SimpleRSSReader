@@ -14,20 +14,30 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Set;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.RssChanel;
+import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
+import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -35,7 +45,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private final static String KEY_CUR_NAV_ITEM_SELECTED_ID = "KEY_CUR_NAV_ITEM_SELECTED_ID";
 
     private Toolbar toolbar;
-    private TabLayout tabLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Context ctx;
     private SharedPreferences pref;
@@ -44,10 +53,62 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView navigationView;
+    private NavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener;
     private ViewPager pager;
     private ViewPager.OnPageChangeListener onPageChangeListener;
     private int currentSelectedNavItemsId;
     private CoordinatorLayout coordinatorLayout;
+
+    private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
+    private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+
+    @Override
+    protected void onStart()
+    {
+//        Log.d(LOG, "onStart called!");
+        super.onStart();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
+    }
+
+    @Override
+    protected void onPause()
+    {
+//        Log.d(LOG, "onPause called!");
+        super.onPause();
+
+        if (spiceManager.isStarted())
+        {
+            spiceManager.shouldStop();
+        }
+        if (spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.shouldStop();
+        }
+    }
+
+    @Override
+    protected void onResume()
+    {
+//        Log.d(LOG, "onResume called!");
+        super.onResume();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)
@@ -106,7 +167,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
         pager = (ViewPager) findViewById(R.id.pager);
 
@@ -149,69 +209,49 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     private void setUpNavigationViewAndTabs()
     {
-        Set<String> values = pref.getStringSet(getString(R.string.pref_system_key_rss_urls), null);
-        ArrayList<String> rssUrls;
-        if (values == null)
+//        Set<String> values = pref.getStringSet(getString(R.string.pref_system_key_rss_urls), null);
+//        ArrayList<String> rssUrls;
+//        if (values == null)
+//        {
+//            return;
+//        }
+//        rssUrls = new ArrayList<>(values);
+//        final ArrayList<String> rssTitles = new ArrayList<>(rssUrls);//TODO get them from DB
+        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        final ArrayList<RssChanel> chanels = new ArrayList<>();
+        try
         {
-            return;
+            chanels.addAll(databaseHelper.getDaoCategory().queryForAll());
         }
-        rssUrls = new ArrayList<>(values);
-        final ArrayList<String> rssTitles = new ArrayList<>(rssUrls);//TODO get them from DB
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         final ArrayList<Integer> menuIds = new ArrayList<>();
-
-        for (int i = 0; i < rssUrls.size(); i++)
+        for (int i = 0; i < chanels.size(); i++)
         {
 //            String url = rssUrls.get(i);
             menuIds.add(100 * i);
-            navigationView.getMenu().add(0, menuIds.get(i), i, rssTitles.get(i));
-            tabLayout.addTab(tabLayout.newTab().setText(rssTitles.get(i)));
+            navigationView.getMenu().add(0, menuIds.get(i), i, chanels.get(i).getTitle());
         }
+        navigationView.getMenu().setGroupCheckable(0, true, true);
 
-        pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), rssUrls));
+        pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), chanels));
         onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             @Override
             public void onPageSelected(int position)
             {
                 Log.d(LOG, "onPageSelected with position: " + position);
-                collapsingToolbarLayout.setTitle(rssTitles.get(position));
+                toolbar.setTitle(chanels.get(position).getTitle());
+                collapsingToolbarLayout.setTitle(chanels.get(position).getTitle());
                 super.onPageSelected(position);
             }
         };
         pager.addOnPageChangeListener(onPageChangeListener);
 
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-        {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab)
-            {
-                int position = tab.getPosition();
-                if (position == 0)
-                {
-                    onPageChangeListener.onPageSelected(0);
-                }
-                else
-                {
-                    pager.setCurrentItem(position);
-                }
-                navigationView.setCheckedItem(menuIds.get(position));
-            }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab)
-            {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab)
-            {
-
-            }
-        });
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
+        onNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
         {
             @Override
             public boolean onNavigationItemSelected(MenuItem item)
@@ -233,9 +273,35 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
-        });
-        navigationView.setCheckedItem(currentSelectedNavItemsId);
+        };
+
+        navigationView.setNavigationItemSelectedListener(onNavigationItemSelectedListener);
+//        navigationView.setCheckedItem(currentSelectedNavItemsId);
+        onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(currentSelectedNavItemsId));
     }
+
+    private TextView getActionBarTextView()
+    {
+        TextView titleTextView = null;
+
+        try
+        {
+            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
+            f.setAccessible(true);
+            titleTextView = (TextView) f.get(toolbar);
+        }
+        catch (NoSuchFieldException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e)
+        {
+            Log.e(LOG, e.toString());
+        }
+
+        return titleTextView;
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)

@@ -3,10 +3,10 @@ package ru.kuchanov.simplerssreader.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
+import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentArticlesList;
 
 /**
@@ -15,9 +15,9 @@ import ru.kuchanov.simplerssreader.fragment.FragmentArticlesList;
  */
 public class PagerAdapterMain extends FragmentStatePagerAdapter
 {
-    ArrayList<String> urls;
+    ArrayList<RssChanel> urls;
 
-    public PagerAdapterMain(FragmentManager fm, ArrayList<String> urls)
+    public PagerAdapterMain(FragmentManager fm, ArrayList<RssChanel> urls)
     {
         super(fm);
         this.urls = urls;
@@ -26,7 +26,7 @@ public class PagerAdapterMain extends FragmentStatePagerAdapter
     @Override
     public Fragment getItem(int position)
     {
-        return FragmentArticlesList.newInstance(urls.get(position));
+        return FragmentArticlesList.newInstance(urls.get(position).getUrl());
     }
 
     @Override

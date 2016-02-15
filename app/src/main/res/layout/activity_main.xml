@@ -24,30 +24,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/detail_backdrop_height"
                 android:minHeight="?attr/actionBarSize"
-                app:contentScrim="?attr/colorPrimary"
+                app:contentScrim="?attr/colorPrimaryDark"
+                app:collapsedTitleGravity="center"
+                app:expandedTitleMarginBottom="10dp"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/toolbar_big_height"
+                    android:layout_height="?attr/actionBarSize"
                     android:minHeight="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways"/>
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tab_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/tab_layout_height"
-                    android:layout_gravity="bottom|end"
-                    android:gravity="bottom|end"
-                    android:minHeight="@dimen/tab_layout_height"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:tabGravity="center"
-                    app:tabIndicatorHeight="3dp"
-                    app:tabMode="scrollable"/>
-
             </android.support.design.widget.CollapsingToolbarLayout>
+
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager

@@ -4,9 +4,9 @@
     <string name="rss_vesti_finance_url">http://www.vestifinance.ru/yandex.xml</string>
     <string name="rss_tproger_url">http://tproger.ru/feed/</string>
 
-    <string name="rss_vesti_title">http://www.vesti.ru/vesti.rss</string>
-    <string name="rss_vesti_finance_title">http://www.vestifinance.ru/yandex.xml</string>
-    <string name="rss_tproger_title">http://tproger.ru/feed/</string>
+    <string name="rss_vesti_title">Вести</string>
+    <string name="rss_vesti_finance_title">Вести Экономика</string>
+    <string name="rss_tproger_title">Типичный программист</string>
 
     <string-array name="rss_default_urls">
         <item>@string/rss_vesti_url</item>
