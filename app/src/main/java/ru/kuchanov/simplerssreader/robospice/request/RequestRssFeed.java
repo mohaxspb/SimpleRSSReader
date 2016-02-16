@@ -45,13 +45,27 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
     @Override
     public ArticlesList loadDataFromNetwork() throws Exception
     {
-//        Log.i(LOG, "loadDataFromNetwork called");
-        ArticlesList articles = new ArticlesList();
+        Log.i(LOG, "loadDataFromNetwork called");
+
 
         String responseBody = makeRequest();
         Document document = Jsoup.parse(responseBody);
 
-        ArrayList<Article> articleArrayList = RssParser.parseRssFeed(document);
+        ArrayList<Article> articleArrayList;
+        try
+        {
+            articleArrayList = RssParser.parseRssFeed(document);
+
+            ArticlesList articles = new ArticlesList();
+            articles.setResult(articleArrayList);
+            return articles;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
 
 //        articles.setNumOfNewArts(newArtsQuont);
 //        articles.setResult(list);
@@ -65,7 +79,7 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
 //            articles.setContainsBottomArt(true);
 //        }
 
-        return articles;
+
     }
 
     private String makeRequest() throws Exception

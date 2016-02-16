@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    android:id="@+id/cardView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    app:cardBackgroundColor="?myCardBackgroundColor"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:id="@+id/art_card_main_lin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/art_card_top_lin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- art img if is; Othervise - has zero height -->
+
+            <ImageView
+                android:id="@+id/art_card_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/hello_world"
+                android:scaleType="fitXY"/>
+            <!-- title and date; -->
+
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="@dimen/text_size_secondary"/>
+
+        </LinearLayout>
+
+        <!-- preview -->
+
+        <LinearLayout
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical"/>
+        <!-- bottom panel with share btn, save&read icons -->
+
+        <!--  <LinearLayout
+              android:id="@+id/bottom_panel"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:baselineAligned="false"
+              android:orientation="horizontal">
+
+
+              <ru.kuchanov.tproger.custom.view.HintedImageView
+                  android:id="@+id/share_img"
+                  android:layout_width="25dp"
+                  android:layout_height="25dp"
+                  android:layout_gravity="start"
+                  android:layout_margin="5dp"
+                  android:contentDescription="@string/hello_world"
+                  android:scaleType="fitXY"
+                  android:src="?shareIcon"/>
+
+
+              <ru.kuchanov.tproger.custom.view.HintedImageView
+                  android:id="@+id/save_img"
+                  android:layout_width="25dp"
+                  android:layout_height="25dp"
+                  android:layout_gravity="center_horizontal"
+                  android:layout_margin="5dp"
+                  android:contentDescription="@string/hello_world"
+                  android:scaleType="fitXY"
+                  android:src="?downloadIcon"/>
+
+
+              <ru.kuchanov.tproger.custom.view.HintedImageView
+                  android:id="@+id/read_img"
+                  android:layout_width="25dp"
+                  android:layout_height="25dp"
+                  android:layout_gravity="end"
+                  android:layout_margin="5dp"
+                  android:contentDescription="@string/hello_world"
+                  android:scaleType="fitXY"
+                  android:src="?readIcon"/>
+          </LinearLayout>-->
+    </LinearLayout>
+</android.support.v7.widget.CardView>

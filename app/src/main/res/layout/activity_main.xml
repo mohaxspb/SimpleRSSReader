@@ -25,7 +25,7 @@
                 android:layout_height="@dimen/detail_backdrop_height"
                 android:minHeight="?attr/actionBarSize"
                 app:contentScrim="?attr/colorPrimaryDark"
-                app:collapsedTitleGravity="center"
+                app:expandedTitleGravity="center|bottom"
                 app:expandedTitleMarginBottom="10dp"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 

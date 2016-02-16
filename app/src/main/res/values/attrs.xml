@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="myCardBackgroundColor" format="color|reference"/>
     <attr name="settingsIcon" format="reference"/>
     <attr name="commentsIcon" format="reference"/>
     <attr name="shareIcon" format="reference"/>

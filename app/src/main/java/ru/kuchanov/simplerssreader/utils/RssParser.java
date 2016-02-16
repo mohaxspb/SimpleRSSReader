@@ -35,7 +35,7 @@ public class RssParser
     private static final String TAG_CATEGORY = "category";
 
 
-    public static ArrayList<Article> parseRssFeed(Document document)
+    public static ArrayList<Article> parseRssFeed(Document document) throws Exception
     {
         ArrayList<Article> articleArrayList = new ArrayList<>();
 
@@ -69,7 +69,8 @@ public class RssParser
                     imagesUrls += Const.DIVIDER;
                 }
             }
-            String author = item.getElementsByTag(TAG_CREATOR).first().text();
+            Element authorTag = item.getElementsByTag(TAG_CREATOR).first();
+            String author = (authorTag != null) ? authorTag.text() : null;
             String categories = "";
             Elements cats = item.getElementsByTag(TAG_CATEGORY);
             for (int i = 0; i < cats.size(); i++)

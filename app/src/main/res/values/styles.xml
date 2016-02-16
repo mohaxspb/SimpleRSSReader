@@ -43,6 +43,8 @@
         <!--<item name="createIcon">@drawable/ic_create_blue_grey_600_48dp</item>-->
         <!--<item name="favoriteStarIcon">@drawable/ic_grade_blue_grey_600_48dp</item>-->
         <!--<item name="tabletIcon">@drawable/ic_tablet_android_blue_grey_600_48dp</item>-->
+        <!--custom colors-->
+        <item name="myCardBackgroundColor">@color/material_blue_grey_200</item>
     </style>
 
     <!-- Base application theme. Dark -->
@@ -70,6 +72,8 @@
         <!--<item name="createIcon">@drawable/ic_create_white_48dp</item>-->
         <!--<item name="favoriteStarIcon">@drawable/ic_grade_white_48dp</item>-->
         <!--<item name="tabletIcon">@drawable/ic_tablet_android_white_48dp</item>-->
+        <!--custom colors-->
+        <item name="myCardBackgroundColor">@color/material_blue_grey_800</item>
     </style>
 
 </resources>
