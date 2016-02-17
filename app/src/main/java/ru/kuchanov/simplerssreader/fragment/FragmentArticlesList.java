@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
-import com.octo.android.robospice.persistence.CacheManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
@@ -51,6 +50,7 @@ public class FragmentArticlesList extends Fragment
     private String url;
 
     private ArrayList<Article> articles = new ArrayList<>();
+    private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
 
     public static Fragment newInstance(String url)
     {
@@ -76,7 +76,7 @@ public class FragmentArticlesList extends Fragment
 
         Bundle args = getArguments();
         url = args.getString(KEY_RSS_URL);
-        LOG += url;
+        LOG += "#" + url;
 
         if (savedInstanceState != null)
         {
@@ -127,10 +127,16 @@ public class FragmentArticlesList extends Fragment
         super.onStart();
 
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-        spiceManager.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
+//        spiceManager.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
 
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-        spiceManagerOffline.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
+//        spiceManagerOffline.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
     }
 
     @Override
@@ -139,8 +145,8 @@ public class FragmentArticlesList extends Fragment
 //        Log.d(LOG, "onResume called");
         super.onResume();
 
-        spiceManager.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
-        spiceManagerOffline.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
+        spiceManager.addListenerIfPending(ArticlesList.class, LOG, requestListener);
+        spiceManagerOffline.addListenerIfPending(ArticlesList.class, LOG, requestListener);
         //make request for it
         if (articles.size() == 0)
         {
@@ -154,7 +160,7 @@ public class FragmentArticlesList extends Fragment
         if (!forceLoad)
         {
             RequestRssFeed requestRssFeed = new RequestRssFeed(ctx, url);
-            spiceManager.execute(requestRssFeed, LOG, DurationInMillis.ALWAYS_EXPIRED, new ArticlesListRequestListener());
+            spiceManager.execute(requestRssFeed, LOG, DurationInMillis.ALWAYS_EXPIRED, requestListener);
         }
         else
         {
@@ -168,7 +174,7 @@ public class FragmentArticlesList extends Fragment
         @Override
         public void onRequestNotFound()
         {
-
+//            Log.d(LOG, "onRequestNotFound called");
         }
 
         @Override

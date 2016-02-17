@@ -1,0 +1,124 @@
+package ru.kuchanov.simplerssreader.utils;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.Html;
+import android.view.View;
+import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
+import java.io.InputStream;
+
+/**
+ * Created by Юрий on 17.02.2016 16:17.
+ * For SimpleRSSReader.
+ */
+public class UILImageGetter implements Html.ImageGetter
+{
+    private Context c;
+    private TextView container;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
+
+    public UILImageGetter(View t, Context c)
+    {
+        this.c = c;
+        this.container = (TextView) t;
+
+        imageLoader = ImageLoader.getInstance();
+        options = new DisplayImageOptions.Builder().cacheOnDisk(true).cacheInMemory(false).imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565).resetViewBeforeLoading(true).build();
+    }
+
+    @Override
+    public Drawable getDrawable(String source)
+    {
+        UrlImageDownloader urlDrawable = new UrlImageDownloader(c.getResources(), source);
+        imageLoader.loadImage(source, options, new SimpleListener(urlDrawable));
+        return urlDrawable;
+    }
+
+    private class SimpleListener extends SimpleImageLoadingListener
+    {
+        UrlImageDownloader urlImageDownloader;
+
+        public SimpleListener(UrlImageDownloader downloader)
+        {
+            super();
+            urlImageDownloader = downloader;
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
+        {
+            int width = loadedImage.getWidth();
+            int height = loadedImage.getHeight();
+
+            int newWidth = width;
+            int newHeight = height;
+
+            if (width > container.getWidth())
+            {
+                newWidth = container.getWidth();
+                newHeight = (newWidth * height) / width;
+            }
+
+            Drawable result = new BitmapDrawable(c.getResources(), loadedImage);
+            result.setBounds(0, 0, newWidth, newHeight);
+
+            urlImageDownloader.setBounds(0, 0, newWidth, newHeight);
+            urlImageDownloader.drawable = result;
+
+            container.setText(container.getText());
+        }
+    }
+
+    public class UrlImageDownloader extends BitmapDrawable
+    {
+        public Drawable drawable;
+
+        /**
+         * Create a drawable by decoding a bitmap from the given input stream.
+         */
+        public UrlImageDownloader(Resources res, InputStream is)
+        {
+            super(res, is);
+        }
+
+        /**
+         * Create a drawable by opening a given file path and decoding the bitmap.
+         */
+        public UrlImageDownloader(Resources res, String filepath)
+        {
+            super(res, filepath);
+            drawable = new BitmapDrawable(res, filepath);
+        }
+
+        /**
+         * Create drawable from a bitmap, setting initial target density based on
+         * the display metrics of the resources.
+         */
+        public UrlImageDownloader(Resources res, Bitmap bitmap)
+        {
+            super(res, bitmap);
+        }
+
+        @Override
+        public void draw(Canvas canvas)
+        {
+            // override the draw to facilitate refresh function later
+            if (drawable != null)
+            {
+                drawable.draw(canvas);
+            }
+        }
+    }
+}

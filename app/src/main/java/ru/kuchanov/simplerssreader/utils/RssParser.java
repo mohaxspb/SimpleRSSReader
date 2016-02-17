@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import ru.kuchanov.simplerssreader.db.Article;
 
@@ -58,12 +57,28 @@ public class RssParser
             {
                 e.printStackTrace();
             }
-            String imagesUrls = "";
+            String imagesUrls = null;
             Elements enclosures = item.getElementsByTag(TAG_ENCLOSURE);
+            for (Element el : enclosures)
+            {
+                if (!el.attr("type").equals("image/jpeg"))
+                {
+                    el.remove();
+                }
+            }
+            if (enclosures.size() != 0)
+            {
+                imagesUrls = "";
+            }
             for (int i = 0; i < enclosures.size(); i++)
             {
                 Element enclosure = enclosures.get(i);
-                imagesUrls += enclosure.attr("url");
+                String imgUrl = enclosure.attr("url");
+                if (imgUrl.startsWith("//"))
+                {
+                    imgUrl = "http:" + imgUrl;
+                }
+                imagesUrls += imgUrl;
                 if (i < enclosures.size() - 1)
                 {
                     imagesUrls += Const.DIVIDER;

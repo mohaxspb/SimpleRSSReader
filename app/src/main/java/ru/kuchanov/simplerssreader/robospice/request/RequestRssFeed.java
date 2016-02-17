@@ -28,7 +28,7 @@ import ru.kuchanov.simplerssreader.utils.RssParser;
  */
 public class RequestRssFeed extends SpiceRequest<ArticlesList>
 {
-    public static final String LOG = RequestRssFeed.class.getSimpleName();
+    private String LOG = RequestRssFeed.class.getSimpleName();
     private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
@@ -39,6 +39,7 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
 
         this.ctx = ctx;
         this.url = rssUrl;
+        this.LOG += "#" + url;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
     }
 

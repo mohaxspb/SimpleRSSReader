@@ -15,4 +15,6 @@
     <!--toolbar and tavLayout heights-->
     <dimen name="toolbar_big_height">88dp</dimen>
     <dimen name="tab_layout_height">40dp</dimen>
+    <!--margings for lists-->
+    <dimen name="recycler_top_item_margin">5dp</dimen>
 </resources>

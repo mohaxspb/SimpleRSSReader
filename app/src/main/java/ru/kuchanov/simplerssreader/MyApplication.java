@@ -6,6 +6,7 @@ import android.util.Log;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
+import ru.kuchanov.simplerssreader.utils.SingltonUIL;
 
 /**
  * Created by Юрий on 15.02.2016 16:40.
@@ -22,5 +23,6 @@ public class MyApplication extends Application
         Log.d(LOG, "onCreate called");
 
         SingltonRoboSpice.initInstance();
+        SingltonUIL.initInstance(this);
     }
 }

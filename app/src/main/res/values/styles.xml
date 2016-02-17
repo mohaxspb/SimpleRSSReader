@@ -39,12 +39,14 @@
         <item name="nightModeIcon">@drawable/ic_brightness_4_blue_grey_600_48dp</item>
         <item name="dashboardIcon">@drawable/ic_dashboard_blue_grey_600_48dp</item>
         <item name="viewModuleIcon">@drawable/ic_view_module_blue_grey_600_48dp</item>
+        <item name="renewIcon">@drawable/ic_autorenew_blue_grey_600_48dp</item>
         <!--<item name="clearIcon">@drawable/ic_clear_blue_grey_600_48dp</item>-->
         <!--<item name="createIcon">@drawable/ic_create_blue_grey_600_48dp</item>-->
         <!--<item name="favoriteStarIcon">@drawable/ic_grade_blue_grey_600_48dp</item>-->
         <!--<item name="tabletIcon">@drawable/ic_tablet_android_blue_grey_600_48dp</item>-->
         <!--custom colors-->
         <item name="myCardBackgroundColor">@color/material_blue_grey_200</item>
+        <item name="windowBackgroundDark">@color/material_blue_grey_200</item>
     </style>
 
     <!-- Base application theme. Dark -->
@@ -68,12 +70,14 @@
         <item name="nightModeIcon">@drawable/ic_brightness_4_white_48dp</item>
         <item name="dashboardIcon">@drawable/ic_dashboard_white_48dp</item>
         <item name="viewModuleIcon">@drawable/ic_view_module_white_48dp</item>
+        <item name="renewIcon">@drawable/ic_autorenew_white_48dp</item>
         <!--<item name="clearIcon">@drawable/ic_clear_white_48dp</item>-->
         <!--<item name="createIcon">@drawable/ic_create_white_48dp</item>-->
         <!--<item name="favoriteStarIcon">@drawable/ic_grade_white_48dp</item>-->
         <!--<item name="tabletIcon">@drawable/ic_tablet_android_white_48dp</item>-->
         <!--custom colors-->
-        <item name="myCardBackgroundColor">@color/material_blue_grey_800</item>
+        <item name="myCardBackgroundColor">@color/my_material_blue_grey_800</item>
+        <item name="windowBackgroundDark">@color/my_material_blue_grey_800</item>
     </style>
 
 </resources>
