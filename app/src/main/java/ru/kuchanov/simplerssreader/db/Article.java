@@ -8,6 +8,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -101,6 +103,40 @@ public class Article implements Parcelable
     public Article()
     {
 
+    }
+
+    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper helper)
+    {
+        ArrayList<Article> artsInDB = new ArrayList<>();
+        for (Article article : loadedArts)
+        {
+            try
+            {
+                artsInDB.add(helper.getDaoArticle().createIfNotExists(article));
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return artsInDB;
+    }
+
+    /**
+     * @return Article or null if cant find it by url
+     */
+    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    {
+        Article a = null;
+        try
+        {
+            a = helper.getDaoArticle().queryBuilder().where().eq(FIELD_URL, url).queryForFirst();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return a;
     }
 
     /**
@@ -222,6 +258,26 @@ public class Article implements Parcelable
     public void setIsRead(boolean isRead)
     {
         this.isRead = isRead;
+    }
+
+    public String getCategories()
+    {
+        return categories;
+    }
+
+    public void setCategories(String categories)
+    {
+        this.categories = categories;
+    }
+
+    public String getAuthors()
+    {
+        return authors;
+    }
+
+    public void setAuthors(String authors)
+    {
+        this.authors = authors;
     }
 
     /**

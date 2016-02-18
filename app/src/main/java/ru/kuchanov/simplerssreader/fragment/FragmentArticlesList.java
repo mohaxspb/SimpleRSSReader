@@ -3,6 +3,7 @@ package ru.kuchanov.simplerssreader.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
+import ru.kuchanov.simplerssreader.utils.AttributeGetter;
 import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
 
 /**
@@ -194,10 +196,12 @@ public class FragmentArticlesList extends Fragment
             }
             if (articlesList != null)
             {
-                ArrayList<Article> loadedArticles = new ArrayList<Article>(articlesList.getResult());
+                ArrayList<Article> loadedArticles = new ArrayList<>(articlesList.getResult());
                 Collections.sort(loadedArticles, new Article.PubDateComparator());
                 articles.clear();
                 articles.addAll(loadedArticles);
+
+                Log.d(LOG, "articles.size() "+articles.size());
 
                 if (recyclerView.getAdapter() == null)
                 {
@@ -207,6 +211,35 @@ public class FragmentArticlesList extends Fragment
                 else
                 {
                     recyclerView.getAdapter().notifyItemRangeInserted(0, articles.size());
+                }
+
+                Log.d(LOG, "new arts count is: " + articlesList.getNumOfNewArts());
+                Snackbar snackbar;
+                View snackBarView;
+                int colorId = AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark);
+                switch (articlesList.getNumOfNewArts())
+                {
+                    case -1:
+                        //first loading, do nothing
+                        break;
+                    case 0:
+                        snackbar = Snackbar.make(recyclerView, "Новых статей не обнаружено!", Snackbar.LENGTH_SHORT);
+                        snackBarView = snackbar.getView();
+                        snackBarView.setBackgroundColor(colorId);
+                        if (getUserVisibleHint())
+                        {
+                            snackbar.show();
+                        }
+                        break;
+                    default:
+                        snackbar = Snackbar.make(recyclerView, "Обнаружено " + articlesList.getNumOfNewArts() + " новых статей!", Snackbar.LENGTH_SHORT);
+                        snackBarView = snackbar.getView();
+                        snackBarView.setBackgroundColor(colorId);
+                        if (getUserVisibleHint())
+                        {
+                            snackbar.show();
+                        }
+                        break;
                 }
 
                 //test

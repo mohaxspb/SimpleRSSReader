@@ -34,10 +34,12 @@ import java.util.Set;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
+import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
+import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -280,28 +282,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(currentSelectedNavItemsId));
     }
 
-    private TextView getActionBarTextView()
-    {
-        TextView titleTextView = null;
-
-        try
-        {
-            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
-            f.setAccessible(true);
-            titleTextView = (TextView) f.get(toolbar);
-        }
-        catch (NoSuchFieldException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
-        {
-            Log.e(LOG, e.toString());
-        }
-
-        return titleTextView;
-    }
-
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
@@ -376,8 +356,14 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 return true;
             case R.id.night_mode_switcher:
                 this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
-//                this.recreate();
                 return true;
+            case R.id.delete_arts:
+                MyRoboSpiceDatabaseHelper helper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+                ArticleRssChanel.deleteSomeArts(5, "http://www.vestifinance.ru/yandex.xml", helper);
+                break;
+            case R.id.get_db:
+                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

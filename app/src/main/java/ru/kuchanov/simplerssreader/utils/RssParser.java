@@ -1,6 +1,8 @@
 package ru.kuchanov.simplerssreader.utils;
 
 
+import android.util.Log;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.db.Article;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:23.
@@ -20,6 +23,8 @@ import ru.kuchanov.simplerssreader.db.Article;
  */
 public class RssParser
 {
+    private static final String LOG = RssParser.class.getSimpleName();
+
     private static final String TAG_ITEM = "item";
     private static final String TAG_TITLE = "title";
     private static final String TAG_LINK = "link";
@@ -34,15 +39,40 @@ public class RssParser
     private static final String TAG_CATEGORY = "category";
 
 
-    public static ArrayList<Article> parseRssFeed(Document document) throws Exception
+    /**
+     * parse rss, try to find arts in DB by url and write it if not exists
+     *
+     * @throws Exception
+     */
+    public static ArrayList<Article> parseRssFeed(Document document, MyRoboSpiceDatabaseHelper helper) throws Exception
     {
+        String channelTitle = document.getElementsByTag("channel").first().getElementsByTag("title").first().text();
+        Log.d(LOG, "parseRssFeed called " + channelTitle);
         ArrayList<Article> articleArrayList = new ArrayList<>();
 
         Elements items = document.getElementsByTag(TAG_ITEM);
+        Log.d(LOG, "items.size(): " + items.size());
         for (Element item : items)
         {
+//            Log.d(LOG, item.html());
+            Elements childs = item.children();
+//            for (Element child : childs)
+//            {
+//                Log.d(LOG, child.tagName());
+//                Log.d(LOG, child.text().substring(0, (child
+//                        .text().length() > 30) ? 30 : child.text().length()));
+//            }
+            String link = item.getElementsByTag(TAG_LINK).first().html();
+            Log.d(LOG, link);
+            //search it in BD
+            Article articleInDB = Article.getArticleByUrl(link, helper);
+            if (articleInDB != null)
+            {
+                articleArrayList.add(articleInDB);
+                continue;
+            }
+
             String title = item.getElementsByTag(TAG_TITLE).first().text();
-            String link = item.getElementsByTag(TAG_LINK).first().text();
             String preview = item.getElementsByTag(TAG_DESCRIPTION).first().text();
             String pubDateString = item.getElementsByTag(TAG_PUB_DATE).first().text();
             Date pubDate = new Date(0);
@@ -119,7 +149,9 @@ public class RssParser
             {
                 article.setText(articleText);
             }
-            //TODO add categories field to article class
+            article.setCategories(categories);
+            article.setAuthors(author);
+
             articleArrayList.add(article);
         }
         return articleArrayList;

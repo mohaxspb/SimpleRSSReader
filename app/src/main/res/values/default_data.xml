@@ -9,14 +9,14 @@
     <string name="rss_tproger_title">Типичный программист</string>
 
     <string-array name="rss_default_urls">
-        <item>@string/rss_vesti_url</item>
         <item>@string/rss_vesti_finance_url</item>
         <item>@string/rss_tproger_url</item>
+        <item>@string/rss_vesti_url</item>
     </string-array>
 
     <string-array name="rss_default_titles">
-        <item>@string/rss_vesti_title</item>
         <item>@string/rss_vesti_finance_title</item>
         <item>@string/rss_tproger_title</item>
+        <item>@string/rss_vesti_title</item>
     </string-array>
 </resources>

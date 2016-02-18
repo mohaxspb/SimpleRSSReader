@@ -11,14 +11,17 @@ import com.squareup.okhttp.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import ru.kuchanov.simplerssreader.db.Article;
+import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.RssParser;
 
@@ -29,7 +32,7 @@ import ru.kuchanov.simplerssreader.utils.RssParser;
 public class RequestRssFeed extends SpiceRequest<ArticlesList>
 {
     private String LOG = RequestRssFeed.class.getSimpleName();
-    private Context ctx;
+    //    private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
 
@@ -37,7 +40,7 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
     {
         super(ArticlesList.class);
 
-        this.ctx = ctx;
+//        this.ctx = ctx;
         this.url = rssUrl;
         this.LOG += "#" + url;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
@@ -48,17 +51,26 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
     {
         Log.i(LOG, "loadDataFromNetwork called");
 
+        RssChanel rssChanel = RssChanel.getRssChanelByUrl(url, databaseHelper);
 
         String responseBody = makeRequest();
-        Document document = Jsoup.parse(responseBody);
+        Document document = Jsoup.parse(responseBody, "", Parser.xmlParser());
 
         ArrayList<Article> articleArrayList;
         try
         {
-            articleArrayList = RssParser.parseRssFeed(document);
+            articleArrayList = RssParser.parseRssFeed(document, databaseHelper);
+
+            //write to Article table
+            articleArrayList = Article.writeArtsToDB(articleArrayList, databaseHelper);
+
+            //write to articleRss table
+            int numOfNewArts = ArticleRssChanel.writeToArtRssFeedTable(articleArrayList, rssChanel, databaseHelper);
 
             ArticlesList articles = new ArticlesList();
             articles.setResult(articleArrayList);
+            articles.setNumOfNewArts(numOfNewArts);
+
             return articles;
         }
         catch (Exception e)

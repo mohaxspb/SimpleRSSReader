@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -59,6 +60,22 @@ public class RssChanel implements Parcelable
     public RssChanel()
     {
 
+    }
+
+    public static RssChanel getRssChanelByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    {
+        RssChanel rssChanel = null;
+
+        try
+        {
+            rssChanel = helper.getDaoCategory().queryForEq(FIELD_URL, url).get(0);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return rssChanel;
     }
 
     public int getId()
