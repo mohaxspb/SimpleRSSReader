@@ -34,6 +34,31 @@ public class ArticleRssChanel
     @DatabaseField(columnName = FIELD_CATEGORY_ID)
     private int categoryId;
 
+    public static ArrayList<ArticleRssChanel> getArtRssByRssChanel(RssChanel rssChanel, MyRoboSpiceDatabaseHelper helper)
+    {
+        ArrayList<ArticleRssChanel> articleRssChanels = null;
+
+        try
+        {
+            articleRssChanels = (ArrayList<ArticleRssChanel>) helper.getDaoArtRssChanel().queryBuilder()
+                    .where().eq(FIELD_CATEGORY_ID, rssChanel.getId()).query();
+            if (articleRssChanels.size() != 0)
+            {
+                return articleRssChanels;
+            }
+
+            else
+            {
+                return null;
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void deleteSomeArts(int numOfArtsToDelete, String rssUrl, MyRoboSpiceDatabaseHelper helper)
     {
         try

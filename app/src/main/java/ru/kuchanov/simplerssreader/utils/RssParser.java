@@ -51,19 +51,10 @@ public class RssParser
         ArrayList<Article> articleArrayList = new ArrayList<>();
 
         Elements items = document.getElementsByTag(TAG_ITEM);
-        Log.d(LOG, "items.size(): " + items.size());
+//        Log.d(LOG, "items.size(): " + items.size());
         for (Element item : items)
         {
-//            Log.d(LOG, item.html());
-            Elements childs = item.children();
-//            for (Element child : childs)
-//            {
-//                Log.d(LOG, child.tagName());
-//                Log.d(LOG, child.text().substring(0, (child
-//                        .text().length() > 30) ? 30 : child.text().length()));
-//            }
             String link = item.getElementsByTag(TAG_LINK).first().html();
-            Log.d(LOG, link);
             //search it in BD
             Article articleInDB = Article.getArticleByUrl(link, helper);
             if (articleInDB != null)

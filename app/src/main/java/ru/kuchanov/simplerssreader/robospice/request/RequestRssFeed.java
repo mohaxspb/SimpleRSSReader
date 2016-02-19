@@ -10,19 +10,16 @@ import com.squareup.okhttp.Response;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
-import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.RssParser;
 
 /**
@@ -32,7 +29,6 @@ import ru.kuchanov.simplerssreader.utils.RssParser;
 public class RequestRssFeed extends SpiceRequest<ArticlesList>
 {
     private String LOG = RequestRssFeed.class.getSimpleName();
-    //    private Context ctx;
     private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
 
@@ -40,7 +36,6 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
     {
         super(ArticlesList.class);
 
-//        this.ctx = ctx;
         this.url = rssUrl;
         this.LOG += "#" + url;
         databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
@@ -71,6 +66,10 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
             articles.setResult(articleArrayList);
             articles.setNumOfNewArts(numOfNewArts);
 
+            //update refreshed date of RssChanel
+            rssChanel.setRefreshed(new Date(System.currentTimeMillis()));
+            databaseHelper.getDaoCategory().update(rssChanel);
+
             return articles;
         }
         catch (Exception e)
@@ -78,21 +77,6 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
             e.printStackTrace();
             return null;
         }
-
-
-//        articles.setNumOfNewArts(newArtsQuont);
-//        articles.setResult(list);
-        //check if we receive less then Const.NUM_OF_ARTS_ON_PAGE, and if so make last artCat/artTag isBottom
-        //and set value to Articles obj
-        //TODO test
-//        Log.d(LOG, "list.size(): " + list.size());
-//
-//        if (list.size() < Const.NUM_OF_ARTS_ON_PAGE)
-//        {
-//            articles.setContainsBottomArt(true);
-//        }
-
-
     }
 
     private String makeRequest() throws Exception

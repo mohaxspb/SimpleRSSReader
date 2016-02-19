@@ -29,6 +29,7 @@ import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
+import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeedOffline;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
 import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
 
@@ -39,7 +40,7 @@ import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
 public class FragmentArticlesList extends Fragment
 {
     private static final String KEY_RSS_URL = "KEY_RSS_URL";
-    //    private static final String KEY_CURRENT = "KEY_RSS_URL";
+    private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
     private String LOG = FragmentArticlesList.class.getSimpleName();
 
     private Context ctx;
@@ -53,6 +54,7 @@ public class FragmentArticlesList extends Fragment
 
     private ArrayList<Article> articles = new ArrayList<>();
     private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
+    private boolean isLoading = false;
 
     public static Fragment newInstance(String url)
     {
@@ -69,6 +71,7 @@ public class FragmentArticlesList extends Fragment
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(Article.LOG, articles);
+        outState.putBoolean(KEY_IS_LOADING, isLoading);
     }
 
     @Override
@@ -82,7 +85,8 @@ public class FragmentArticlesList extends Fragment
 
         if (savedInstanceState != null)
         {
-            this.articles = savedInstanceState.getParcelableArrayList(Article.LOG);
+            articles = savedInstanceState.getParcelableArrayList(Article.LOG);
+            isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
         }
     }
 
@@ -94,6 +98,16 @@ public class FragmentArticlesList extends Fragment
         View root = inflater.inflate(R.layout.fragment_articles_list, container, false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                performRequest(true);
+            }
+        });
+
         recyclerView = (RecyclerView) root.findViewById(R.id.recycler);
 
         recyclerView.addItemDecoration(new SpacesItemDecoration(0));
@@ -110,6 +124,8 @@ public class FragmentArticlesList extends Fragment
         {
             recyclerView.setAdapter(new RecyclerAdapter(articles));
         }
+
+        setLoading(isLoading);
 
         return root;
     }
@@ -158,19 +174,43 @@ public class FragmentArticlesList extends Fragment
 
     private void performRequest(boolean forceLoad)
     {
-        //TODO
-        if (!forceLoad)
+        setLoading(true);
+        if (forceLoad)
         {
             RequestRssFeed requestRssFeed = new RequestRssFeed(ctx, url);
             spiceManager.execute(requestRssFeed, LOG, DurationInMillis.ALWAYS_EXPIRED, requestListener);
         }
         else
         {
-
+            RequestRssFeedOffline requestRssFeedOffline = new RequestRssFeedOffline(ctx, url);
+            spiceManagerOffline.execute(requestRssFeedOffline, LOG, DurationInMillis.ALWAYS_EXPIRED, requestListener);
         }
     }
 
-    //TODO
+    private void setLoading(final boolean isLoading)
+    {
+        this.isLoading = isLoading;
+
+        if (this.isLoading && swipeRefreshLayout.isRefreshing())
+        {
+//            Log.i(LOG, "isLoading and  swipeRefreshLayout.isRefreshing() are both TRUE, so RETURN!!!");
+            return;
+        }
+
+        int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
+        swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
+
+        //workaround from http://stackoverflow.com/a/26910973/3212712
+        swipeRefreshLayout.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                swipeRefreshLayout.setRefreshing(isLoading);
+            }
+        });
+    }
+
     private class ArticlesListRequestListener implements PendingRequestListener<ArticlesList>
     {
         @Override
@@ -184,6 +224,20 @@ public class FragmentArticlesList extends Fragment
         {
             Log.d(LOG, "onRequestFailure called");
             Log.d(LOG, "spiceException: " + spiceException.toString());
+
+            setLoading(false);
+
+            Snackbar snackbar;
+            View snackBarView;
+            int colorId = AttributeGetter.getColor(ctx, R.attr.colorPrimaryDark);
+            snackbar = Snackbar.make(recyclerView, "Ошибка соединения", Snackbar.LENGTH_SHORT);
+            snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(colorId);
+            if (getUserVisibleHint())
+            {
+                snackbar.show();
+            }
+
         }
 
         @Override
@@ -198,18 +252,27 @@ public class FragmentArticlesList extends Fragment
             {
                 ArrayList<Article> loadedArticles = new ArrayList<>(articlesList.getResult());
                 Collections.sort(loadedArticles, new Article.PubDateComparator());
-                articles.clear();
-                articles.addAll(loadedArticles);
 
-                Log.d(LOG, "articles.size() "+articles.size());
+
+                Log.d(LOG, "articles.size() " + articles.size());
 
                 if (recyclerView.getAdapter() == null)
                 {
                     RecyclerAdapter adapter = new RecyclerAdapter(articles);
                     recyclerView.setAdapter(adapter);
+
+                    articles.clear();
+                    articles.addAll(loadedArticles);
+
+                    recyclerView.getAdapter().notifyItemRangeInserted(0, articles.size());
                 }
                 else
                 {
+                    recyclerView.getAdapter().notifyItemRangeRemoved(0, recyclerView.getAdapter().getItemCount());
+
+                    articles.clear();
+                    articles.addAll(loadedArticles);
+
                     recyclerView.getAdapter().notifyItemRangeInserted(0, articles.size());
                 }
 
@@ -241,12 +304,16 @@ public class FragmentArticlesList extends Fragment
                         }
                         break;
                 }
-
-                //test
-//                for (Article a : articles)
-//                {
-//                    Log.d(LOG, a.getTitle());
-//                }
+                setLoading(false);
+            }
+            else
+            {
+                //no error, but articlesList is null,
+                //so there is no data in cache
+                //so start loading from web
+                Log.d(LOG, "No data in cache");
+                setLoading(true);
+                performRequest(true);
             }
         }
     }

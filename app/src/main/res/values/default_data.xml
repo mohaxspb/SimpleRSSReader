@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="rss_vesti_url">http://www.vesti.ru/vesti.rss</string>
+    <string name="rss_ria_url">http://ria.ru/export/rss2/archive/index.xml</string>
     <string name="rss_vesti_finance_url">http://www.vestifinance.ru/yandex.xml</string>
     <string name="rss_tproger_url">http://tproger.ru/feed/</string>
 
-    <string name="rss_vesti_title">Вести</string>
+    <string name="rss_ria_title">Новостной портал Ria.ru: больше, чем просто новости.</string>
     <string name="rss_vesti_finance_title">Вести Экономика</string>
     <string name="rss_tproger_title">Типичный программист</string>
 
     <string-array name="rss_default_urls">
         <item>@string/rss_vesti_finance_url</item>
         <item>@string/rss_tproger_url</item>
-        <item>@string/rss_vesti_url</item>
+        <item>@string/rss_ria_url</item>
     </string-array>
 
     <string-array name="rss_default_titles">
         <item>@string/rss_vesti_finance_title</item>
         <item>@string/rss_tproger_title</item>
-        <item>@string/rss_vesti_title</item>
+        <item>@string/rss_ria_title</item>
     </string-array>
 </resources>
