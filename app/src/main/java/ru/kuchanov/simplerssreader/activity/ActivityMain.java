@@ -58,7 +58,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private NavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener;
     private ViewPager pager;
     private ViewPager.OnPageChangeListener onPageChangeListener;
-    private int currentSelectedNavItemsId;
+    private int currentSelectedNavItemsId = 0;
     private CoordinatorLayout coordinatorLayout;
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
@@ -193,12 +193,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 public void onDrawerClosed(View view)
                 {
                     supportInvalidateOptionsMenu();
-//                    drawerOpened = false;
                 }
 
                 public void onDrawerOpened(View drawerView)
                 {
-//                    drawerOpened = true;
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -209,18 +207,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         setUpNavigationViewAndTabs();
     }
 
-    private void setUpNavigationViewAndTabs()
+    public ArrayList<RssChanel> getAllRssChanels()
     {
-//        Set<String> values = pref.getStringSet(getString(R.string.pref_system_key_rss_urls), null);
-//        ArrayList<String> rssUrls;
-//        if (values == null)
-//        {
-//            return;
-//        }
-//        rssUrls = new ArrayList<>(values);
-//        final ArrayList<String> rssTitles = new ArrayList<>(rssUrls);//TODO get them from DB
         MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-        final ArrayList<RssChanel> chanels = new ArrayList<>();
+        ArrayList<RssChanel> chanels = new ArrayList<>();
         try
         {
             chanels.addAll(databaseHelper.getDaoCategory().queryForAll());
@@ -229,29 +219,35 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         {
             e.printStackTrace();
         }
+
+        return chanels;
+    }
+
+    private void setUpNavigationViewAndTabs()
+    {
         final ArrayList<Integer> menuIds = new ArrayList<>();
-        for (int i = 0; i < chanels.size(); i++)
+        for (int i = 0; i < getAllRssChanels().size(); i++)
         {
-//            String url = rssUrls.get(i);
             menuIds.add(100 * i);
-            navigationView.getMenu().add(0, menuIds.get(i), i, chanels.get(i).getTitle());
+            navigationView.getMenu().add(0, menuIds.get(i), i, getAllRssChanels().get(i).getTitle());
         }
         navigationView.getMenu().setGroupCheckable(0, true, true);
 
-        pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), chanels));
+        pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
         onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             @Override
             public void onPageSelected(int position)
             {
                 Log.d(LOG, "onPageSelected with position: " + position);
-                toolbar.setTitle(chanels.get(position).getTitle());
-                collapsingToolbarLayout.setTitle(chanels.get(position).getTitle());
+                toolbar.setTitle(getAllRssChanels().get(position).getTitle());
+                collapsingToolbarLayout.setTitle(getAllRssChanels().get(position).getTitle());
+                currentSelectedNavItemsId = menuIds.get(position);
+                navigationView.setCheckedItem(currentSelectedNavItemsId);
                 super.onPageSelected(position);
             }
         };
         pager.addOnPageChangeListener(onPageChangeListener);
-
 
         onNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
         {
@@ -264,21 +260,15 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 //if not last element (which is add new rss
                 //we must simple change viewPagers fragment
                 int indexInRSSList = menuIds.indexOf(currentSelectedNavItemsId);
-                if (indexInRSSList == 0)
-                {
-                    onPageChangeListener.onPageSelected(0);
-                }
-                else
-                {
-                    pager.setCurrentItem(indexInRSSList);
-                }
+                onPageChangeListener.onPageSelected(indexInRSSList);
+                pager.setCurrentItem(indexInRSSList, true);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         };
 
         navigationView.setNavigationItemSelectedListener(onNavigationItemSelectedListener);
-//        navigationView.setCheckedItem(currentSelectedNavItemsId);
+        navigationView.setCheckedItem(currentSelectedNavItemsId);
         onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(currentSelectedNavItemsId));
     }
 
