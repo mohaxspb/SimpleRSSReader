@@ -20,17 +20,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.squareup.otto.Subscribe;
 
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
+import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
+import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
+import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
@@ -54,10 +62,31 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private ViewPager.OnPageChangeListener onPageChangeListener;
     private int currentSelectedNavItemsId = 0;
     private CoordinatorLayout coordinatorLayout;
+    private ImageView toolbarImage;
+
+    private Map<String, ArrayList<Article>> allArticles = new HashMap<>();
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private ArrayList<RssChanel> chanels = new ArrayList<>();
+
+    @Subscribe
+    public void updateAllArtsMap(EventArtsReceived eventArtsReceived)
+    {
+        Log.d(LOG, "updateAllArtsMap called");
+        String rssChanelUrl = eventArtsReceived.getRssChanelUrl();
+        ArrayList<Article> articles = eventArtsReceived.getArts();
+        Log.d(LOG, "articles.size() " + articles.size());
+        this.allArticles.put(rssChanelUrl, articles);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        SingltonOtto.getInstance().unregister(this);
+    }
 
     @Override
     protected void onStart()
@@ -73,6 +102,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         {
             spiceManagerOffline.start(ctx);
         }
+
+        SingltonOtto.getInstance().register(this);
+        ;
     }
 
     @Override
@@ -158,7 +190,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     private void initializeViews()
     {
-
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
@@ -168,6 +199,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         pager = (ViewPager) findViewById(R.id.pager);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+
+        toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
 
 //        fab = (FloatingActionButton) findViewById(R.id.fab);
     }

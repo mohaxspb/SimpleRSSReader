@@ -29,6 +29,8 @@ import ru.kuchanov.simplerssreader.adapter.RecyclerAdapter;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.db.RssChanel;
+import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
+import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
@@ -308,6 +310,9 @@ public class FragmentArticlesList extends Fragment
                         break;
                 }
                 setLoading(false);
+
+                //update activities Map of articles;
+                SingltonOtto.getInstance().post(new EventArtsReceived(url, articles));
             }
             else
             {

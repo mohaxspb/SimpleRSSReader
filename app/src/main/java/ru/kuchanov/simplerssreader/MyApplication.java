@@ -3,8 +3,7 @@ package ru.kuchanov.simplerssreader;
 import android.app.Application;
 import android.util.Log;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-
+import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.SingltonUIL;
 
@@ -14,7 +13,7 @@ import ru.kuchanov.simplerssreader.utils.SingltonUIL;
  */
 public class MyApplication extends Application
 {
-    static final String LOG = MyApplication.class.getSimpleName();
+    private static final String LOG = MyApplication.class.getSimpleName();
 
     @Override
     public void onCreate()
@@ -24,5 +23,6 @@ public class MyApplication extends Application
 
         SingltonRoboSpice.initInstance();
         SingltonUIL.initInstance(this);
+        SingltonOtto.initInstance();
     }
 }
