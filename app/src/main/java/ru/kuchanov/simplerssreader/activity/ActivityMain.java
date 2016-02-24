@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -37,6 +40,7 @@ import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
+import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
@@ -231,6 +235,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             menuIds.add(100 * i);
             navigationView.getMenu().add(0, menuIds.get(i), i, getAllRssChanels().get(i).getTitle());
         }
+        //add btn for adding rssChanels
+        menuIds.add(menuIds.size() * 100);
+        navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Добавить Rss-ленту");
         navigationView.getMenu().setGroupCheckable(0, true, true);
 
         pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
@@ -255,6 +262,29 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             public boolean onNavigationItemSelected(MenuItem item)
             {
                 Log.i(LOG, "onNavigationItemSelected");
+                Log.d(LOG, "item.getItemId(): " + item.getItemId());
+                if (item.getItemId() == menuIds.get(menuIds.size() - 1))
+                {
+                    Log.d(LOG, item.getTitle().toString());
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    //TODO
+//                    new MaterialDialog.Builder(ctx)
+//                            .title("Добавить RSS-ленту")
+//                            .input("введите url-адрес rss-ленты", "", false, new MaterialDialog.InputCallback()
+//                            {
+//                                @Override
+//                                public void onInput(MaterialDialog dialog, CharSequence input)
+//                                {
+//                                    Log.d(LOG, "input: " + input);
+//                                    //TODO testLink
+//                                    FragmentDialogAddRss.newInstance(input.toString()).show(getFragmentManager(), FragmentDialogAddRss.LOG);
+//                                }
+//                            })
+//                            .inputType(InputType.TYPE_TEXT_VARIATION_URI)
+//                            .show();
+                    FragmentDialogAddRss.newInstance().show(getFragmentManager(), FragmentDialogAddRss.LOG);
+                    return false;
+                }
                 currentSelectedNavItemsId = item.getItemId();
                 Log.d(LOG, "item.getItemId(): " + currentSelectedNavItemsId);
                 //if not last element (which is add new rss

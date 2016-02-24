@@ -7,6 +7,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -68,7 +69,11 @@ public class RssChanel implements Parcelable
 
         try
         {
-            rssChanel = helper.getDaoCategory().queryForEq(FIELD_URL, url).get(0);
+            ArrayList<RssChanel> rssChanels = (ArrayList<RssChanel>) helper.getDaoCategory().queryForEq(FIELD_URL, url);
+            if (rssChanels.size() != 0)
+            {
+                rssChanel = rssChanels.get(0);
+            }
         }
         catch (SQLException e)
         {

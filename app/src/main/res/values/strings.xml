@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Simple Rss Reader</string>
     <string name="hello_world">hello_world</string>
+    <string name="close">Закрыть</string>
+    <string name="test_url">Проверить</string>
+    <string name="enter_rss_url">Введите URL адрес RSS-ленты</string>
+    <string name="add">Добавить</string>
 </resources>
