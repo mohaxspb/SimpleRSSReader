@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:23.

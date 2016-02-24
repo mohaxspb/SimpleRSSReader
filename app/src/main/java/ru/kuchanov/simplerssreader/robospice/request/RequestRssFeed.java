@@ -18,7 +18,7 @@ import java.util.Date;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.utils.RssParser;
 

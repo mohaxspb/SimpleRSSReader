@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 
 /**

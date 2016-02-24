@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
+
 /**
  * Created by Юрий on 13.02.2016 21:51.
  * For SimpleRSSReader.

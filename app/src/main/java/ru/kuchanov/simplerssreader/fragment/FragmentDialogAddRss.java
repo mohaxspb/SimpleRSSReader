@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import ru.kuchanov.simplerssreader.R;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 
 /**

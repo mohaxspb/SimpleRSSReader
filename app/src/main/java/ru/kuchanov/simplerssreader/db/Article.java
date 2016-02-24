@@ -2,7 +2,6 @@ package ru.kuchanov.simplerssreader.db;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -12,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 13.02.2016 21:13.

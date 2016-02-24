@@ -13,7 +13,7 @@ import java.util.List;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:25.

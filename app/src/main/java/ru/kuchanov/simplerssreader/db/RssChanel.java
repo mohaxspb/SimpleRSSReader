@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
+
 /**
  * Created by Юрий on 13.02.2016 22:11.
  * For SimpleRSSReader.

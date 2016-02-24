@@ -9,36 +9,26 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Set;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
