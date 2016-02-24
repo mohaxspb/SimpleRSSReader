@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
-
 /**
  * Created by Юрий on 13.02.2016 21:51.
  * For SimpleRSSReader.
@@ -24,7 +22,6 @@ public class ArticlesList
 
     @ForeignCollectionField(eager = false)
     private Collection<Article> result;
-
 
     @DatabaseField
     private boolean containsBottomArt = false;
@@ -41,7 +38,10 @@ public class ArticlesList
     @DatabaseField
     private int numOfNewArts = -2;
 
-    public static void deleteAllEntries(MyRoboSpiceDatabaseHelper h)
+    @DatabaseField
+    private String rssChanelTitle;
+
+    public static void deleteAllEntries(MyRoboSpiceDatabaseHelper1 h)
     {
         try
         {
@@ -94,4 +94,13 @@ public class ArticlesList
         this.numOfNewArts = numOfNewArts;
     }
 
+    public String getRssChanelTitle()
+    {
+        return rssChanelTitle;
+    }
+
+    public void setRssChanelTitle(String rssChanelTitle)
+    {
+        this.rssChanelTitle = rssChanelTitle;
+    }
 }

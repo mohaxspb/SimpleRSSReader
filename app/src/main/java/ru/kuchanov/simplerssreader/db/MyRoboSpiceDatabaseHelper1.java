@@ -1,4 +1,4 @@
-package ru.kuchanov.simplerssreader.utils;
+package ru.kuchanov.simplerssreader.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,31 +13,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import ru.kuchanov.simplerssreader.R;
-import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
-import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.RssChanel;
 
 /**
  * Created by Юрий on 13.02.2016 21:56.
  * For SimpleRSSReader.
  */
-public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
+public class MyRoboSpiceDatabaseHelper1 extends RoboSpiceDatabaseHelper
 {
-    public static final String LOG = MyRoboSpiceDatabaseHelper.class.getSimpleName();
+    public static final String LOG = MyRoboSpiceDatabaseHelper1.class.getSimpleName();
 
     public final static String DB_NAME = "simple_rss_reader_db";
     public final static int DB_VERSION = 1;
 
     Context context;
 
-    public MyRoboSpiceDatabaseHelper(Context context, String databaseName, int databaseVersion)
+    public MyRoboSpiceDatabaseHelper1(Context context, String databaseName, int databaseVersion)
     {
         super(context, databaseName, databaseVersion);
         this.context = context;
     }
 
-    public MyRoboSpiceDatabaseHelper(Context ctx)
+    public MyRoboSpiceDatabaseHelper1(Context ctx)
     {
         super(ctx, DB_NAME, DB_VERSION);
         this.context = ctx;
@@ -106,7 +102,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         {
             for (RssChanel c : cats)
             {
-                getDaoCategory().create(c);
+                getDaoRssChanel().create(c);
             }
         }
         catch (SQLException e)
@@ -163,7 +159,7 @@ public class MyRoboSpiceDatabaseHelper extends RoboSpiceDatabaseHelper
         return daoArticle;
     }
 
-    public Dao<RssChanel, Integer> getDaoCategory()
+    public Dao<RssChanel, Integer> getDaoRssChanel()
     {
         Dao<RssChanel, Integer> daoCategory = null;
         try

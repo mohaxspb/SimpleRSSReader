@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
-
 /**
  * Created by Юрий on 13.02.2016 22:11.
  * For SimpleRSSReader.
@@ -65,13 +63,33 @@ public class RssChanel implements Parcelable
 
     }
 
-    public static RssChanel getRssChanelByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    public static RssChanel getRssChanelByUrl(String url, MyRoboSpiceDatabaseHelper1 helper)
     {
         RssChanel rssChanel = null;
 
         try
         {
-            ArrayList<RssChanel> rssChanels = (ArrayList<RssChanel>) helper.getDaoCategory().queryForEq(FIELD_URL, url);
+            ArrayList<RssChanel> rssChanels = (ArrayList<RssChanel>) helper.getDaoRssChanel().queryForEq(FIELD_URL, url);
+            if (rssChanels.size() != 0)
+            {
+                rssChanel = rssChanels.get(0);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return rssChanel;
+    }
+
+    public static RssChanel getRssChanelByTitle(String title, MyRoboSpiceDatabaseHelper1 helper)
+    {
+        RssChanel rssChanel = null;
+
+        try
+        {
+            ArrayList<RssChanel> rssChanels = (ArrayList<RssChanel>) helper.getDaoRssChanel().queryForEq(FIELD_TITLE, title);
             if (rssChanels.size() != 0)
             {
                 rssChanel = rssChanels.get(0);

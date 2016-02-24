@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 
-import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
-
 /**
  * Created by Юрий on 13.02.2016 21:13.
  * For SimpleRSSReader.
@@ -106,7 +104,7 @@ public class Article implements Parcelable
 
     }
 
-    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper helper)
+    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper1 helper)
     {
         ArrayList<Article> artsInDB = new ArrayList<>();
         for (Article article : loadedArts)
@@ -126,7 +124,7 @@ public class Article implements Parcelable
     /**
      * @return Article or null if cant find it by url
      */
-    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper1 helper)
     {
         Article a = null;
         try

@@ -18,7 +18,7 @@ import java.util.Date;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.utils.RssParser;
 
@@ -29,8 +29,9 @@ import ru.kuchanov.simplerssreader.utils.RssParser;
 public class RequestRssFeed extends SpiceRequest<ArticlesList>
 {
     private String LOG = RequestRssFeed.class.getSimpleName();
-    private MyRoboSpiceDatabaseHelper databaseHelper;
+    private MyRoboSpiceDatabaseHelper1 databaseHelper;
     private String url;
+    private boolean isTestRequest = false;
 
     public RequestRssFeed(Context ctx, String rssUrl)
     {
@@ -38,7 +39,12 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
 
         this.url = rssUrl;
         this.LOG += "#" + url;
-        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        databaseHelper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+    }
+
+    public void setTestRssChanel()
+    {
+        this.isTestRequest = true;
     }
 
     @Override
@@ -54,21 +60,58 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
         ArrayList<Article> articleArrayList;
         try
         {
+            ArticlesList articles = new ArticlesList();
+
             articleArrayList = RssParser.parseRssFeed(document, databaseHelper);
 
-            //write to Article table
-            articleArrayList = Article.writeArtsToDB(articleArrayList, databaseHelper);
+            if (articleArrayList.size() == 0)
+            {
+                //so there is no arts in html...
+                //May be wrong url?
+                //so return null as artsList
+                articles.setResult(null);
+                return articles;
+            }
+            else
+            {
+                //check if there is RssChanel with given url in DB
+                //by checking rssChanel for null
+                //if it's null and we have some arts
+                //we must create new rss chanel in DB
+                if (rssChanel == null && !isTestRequest)
+                {
+                    rssChanel = new RssChanel();
+                    rssChanel.setUrl(url);
+                    String title = document.title();
+                    rssChanel.setTitle(title);
+                    databaseHelper.getDaoRssChanel().create(rssChanel);
+                }
+            }
 
-            //write to articleRss table
-            int numOfNewArts = ArticleRssChanel.writeToArtRssFeedTable(articleArrayList, rssChanel, databaseHelper);
+            //write arts to DB if it's not test request
+            if (!isTestRequest)
+            {
+                //write to Article table
+                articleArrayList = Article.writeArtsToDB(articleArrayList, databaseHelper);
 
-            ArticlesList articles = new ArticlesList();
+                //write to articleRss table
+                int numOfNewArts = ArticleRssChanel.writeToArtRssFeedTable(articleArrayList, rssChanel, databaseHelper);
+
+                articles.setResult(articleArrayList);
+                articles.setNumOfNewArts(numOfNewArts);
+
+                //update refreshed date of RssChanel
+                rssChanel.setRefreshed(new Date(System.currentTimeMillis()));
+                databaseHelper.getDaoRssChanel().update(rssChanel);
+
+                return articles;
+            }
+
             articles.setResult(articleArrayList);
-            articles.setNumOfNewArts(numOfNewArts);
 
-            //update refreshed date of RssChanel
-            rssChanel.setRefreshed(new Date(System.currentTimeMillis()));
-            databaseHelper.getDaoCategory().update(rssChanel);
+            //add rssTitle to ArticlesList obj
+            //we can need it while adding new rss-feed
+            articles.setRssChanelTitle(document.title());
 
             return articles;
         }

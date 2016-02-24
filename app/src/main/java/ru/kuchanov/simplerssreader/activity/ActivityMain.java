@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
-import ru.kuchanov.simplerssreader.utils.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
@@ -57,6 +57,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
+    private ArrayList<RssChanel> chanels = new ArrayList<>();
 
     @Override
     protected void onStart()
@@ -198,16 +199,16 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
 
-        setUpNavigationViewAndTabs();
+        setUpNavigationViewAndViewPager();
     }
 
     public ArrayList<RssChanel> getAllRssChanels()
     {
-        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
-        ArrayList<RssChanel> chanels = new ArrayList<>();
+        MyRoboSpiceDatabaseHelper1 databaseHelper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+        chanels.clear();
         try
         {
-            chanels.addAll(databaseHelper.getDaoCategory().queryForAll());
+            chanels.addAll(databaseHelper.getDaoRssChanel().queryForAll());
         }
         catch (SQLException e)
         {
@@ -217,9 +218,12 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         return chanels;
     }
 
-    private void setUpNavigationViewAndTabs()
+    public void setUpNavigationViewAndViewPager()
     {
         final ArrayList<Integer> menuIds = new ArrayList<>();
+        //clear menu
+        navigationView.getMenu().clear();
+        //set items
         for (int i = 0; i < getAllRssChanels().size(); i++)
         {
             menuIds.add(100 * i);
@@ -230,7 +234,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Добавить Rss-ленту");
         navigationView.getMenu().setGroupCheckable(0, true, true);
 
-        pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
         onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
             @Override
@@ -246,6 +249,18 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         };
         pager.addOnPageChangeListener(onPageChangeListener);
 
+        if (pager.getAdapter() == null)
+        {
+            pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
+        }
+        else
+        {
+//            pager.setAdapter(null);
+//            pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
+            pager.getAdapter().notifyDataSetChanged();
+        }
+
+
         onNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
         {
             @Override
@@ -257,21 +272,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 {
                     Log.d(LOG, item.getTitle().toString());
                     drawerLayout.closeDrawer(GravityCompat.START);
-                    //TODO
-//                    new MaterialDialog.Builder(ctx)
-//                            .title("Добавить RSS-ленту")
-//                            .input("введите url-адрес rss-ленты", "", false, new MaterialDialog.InputCallback()
-//                            {
-//                                @Override
-//                                public void onInput(MaterialDialog dialog, CharSequence input)
-//                                {
-//                                    Log.d(LOG, "input: " + input);
-//                                    //TODO testLink
-//                                    FragmentDialogAddRss.newInstance(input.toString()).show(getFragmentManager(), FragmentDialogAddRss.LOG);
-//                                }
-//                            })
-//                            .inputType(InputType.TYPE_TEXT_VARIATION_URI)
-//                            .show();
                     FragmentDialogAddRss.newInstance().show(getFragmentManager(), FragmentDialogAddRss.LOG);
                     return false;
                 }
@@ -368,11 +368,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
                 return true;
             case R.id.delete_arts:
-                MyRoboSpiceDatabaseHelper helper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+                MyRoboSpiceDatabaseHelper1 helper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
                 ArticleRssChanel.deleteSomeArts(5, "http://www.vestifinance.ru/yandex.xml", helper);
                 break;
             case R.id.get_db:
-                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
+                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME);
                 break;
         }
 
