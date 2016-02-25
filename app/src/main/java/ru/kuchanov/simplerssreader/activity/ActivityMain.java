@@ -27,8 +27,10 @@ import com.squareup.otto.Subscribe;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
@@ -38,10 +40,13 @@ import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
+import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
+import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
+import ru.kuchanov.simplerssreader.utils.SingltonUIL;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -62,6 +67,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private ViewPager.OnPageChangeListener onPageChangeListener;
     private int currentSelectedNavItemsId = 0;
     private CoordinatorLayout coordinatorLayout;
+    private View cover;
     private ImageView toolbarImage;
 
     private Map<String, ArrayList<Article>> allArticles = new HashMap<>();
@@ -78,6 +84,22 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         ArrayList<Article> articles = eventArtsReceived.getArts();
         Log.d(LOG, "articles.size() " + articles.size());
         this.allArticles.put(rssChanelUrl, articles);
+    }
+
+    @Subscribe
+    public void updateImage(EventShowImage eventShowImage)
+    {
+        Log.d(LOG, "updateImage called");
+        String imageUrl = eventShowImage.getImageUrl();
+        if (imageUrl == null)
+        {
+            //TODO set default image
+            cover.setAlpha(0f);
+            toolbarImage.setImageResource(R.drawable.ic_rss_feed_blue_grey_500_48dp);
+            return;
+        }
+        cover.setAlpha(0f);
+        SingltonUIL.getInstance().displayImage(imageUrl, toolbarImage);
     }
 
     @Override
@@ -201,6 +223,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
         toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
+        cover = findViewById(R.id.cover);
 
 //        fab = (FloatingActionButton) findViewById(R.id.fab);
     }
@@ -277,6 +300,29 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 collapsingToolbarLayout.setTitle(getAllRssChanels().get(position).getTitle());
                 currentSelectedNavItemsId = menuIds.get(position);
                 navigationView.setCheckedItem(currentSelectedNavItemsId);
+
+                //TODO test imageChange
+                ArrayList<String> imageUrls = new ArrayList<>();
+                final String imageUrl;// = null;
+                ArrayList<Article> artsForRssFeed = allArticles.get(getAllRssChanels().get(position).getUrl());
+                if (artsForRssFeed != null)
+                {
+                    for (Article a : artsForRssFeed)
+                    {
+                        if (a.getImageUrls() != null)
+                        {
+                            String[] urls = a.getImageUrls().split(Const.DIVIDER);
+                            Collections.addAll(imageUrls, urls);
+                        }
+                    }
+                    imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
+                    updateImage(new EventShowImage(imageUrl));
+                }
+                else
+                {
+                    updateImage(new EventShowImage(null));
+                }
+                /////////////
                 super.onPageSelected(position);
             }
         };

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,21 +20,25 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.simplerssreader.R;
-import ru.kuchanov.simplerssreader.activity.ActivityMain;
 import ru.kuchanov.simplerssreader.adapter.RecyclerAdapter;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
+import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeedOffline;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
+import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
 
 /**
@@ -46,7 +49,7 @@ public class FragmentArticlesList extends Fragment
 {
     private static final String KEY_RSS_URL = "KEY_RSS_URL";
     private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
-    private String LOG = FragmentArticlesList.class.getSimpleName();
+    private String LOG = FragmentArticlesList.class.getSimpleName() + "#" + "NOT_SET_YET";
 
     private Context ctx;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -60,6 +63,9 @@ public class FragmentArticlesList extends Fragment
     private ArrayList<Article> articles = new ArrayList<>();
     private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
     private boolean isLoading = false;
+    private Timer timer;
+    private TimerTask timerTask;
+    private int prevImagePositionInArticlesList = 0;
 
     public static Fragment newInstance(String url)
     {
@@ -82,11 +88,12 @@ public class FragmentArticlesList extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
+//        Log.d(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
         url = args.getString(KEY_RSS_URL);
-        LOG += "#" + url;
+        LOG = getClass().getSimpleName() + "#" + url;
 
         if (savedInstanceState != null)
         {
@@ -150,16 +157,17 @@ public class FragmentArticlesList extends Fragment
         super.onStart();
 
         spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
-//        spiceManager.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
 
         spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-//        spiceManagerOffline.addListenerIfPending(ArticlesList.class, LOG, new ArticlesListRequestListener());
     }
 
     @Override
     public void onPause()
     {
+//        Log.d(LOG, "onPause called");
         super.onPause();
+
+        stopTimer();
     }
 
     @Override
@@ -175,6 +183,68 @@ public class FragmentArticlesList extends Fragment
         {
             performRequest(false);
         }
+        else
+        {
+            setTimer();
+        }
+    }
+
+    private void stopTimer()
+    {
+        if (timer != null && timerTask != null)
+        {
+            timerTask.cancel();
+            timer.cancel();
+        }
+    }
+
+    private void setTimer()
+    {
+        stopTimer();
+        //set and start timer
+        if (timer == null && timerTask == null)
+        {
+            timer = new Timer();
+            timerTask = new TimerTask()
+            {
+                @Override
+                public void run()
+                {
+                    //get new article with image
+                    if (getUserVisibleHint())
+                    {
+                        Log.d(LOG, "timerTask run called");
+                        ArrayList<String> imageUrls = new ArrayList<>();
+                        final String imageUrl;// = null;
+                        for (Article a : articles)
+                        {
+                            if (a.getImageUrls() != null)
+                            {
+                                String[] urls = a.getImageUrls().split(Const.DIVIDER);
+                                Collections.addAll(imageUrls, urls);
+                            }
+                        }
+                        imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
+                        getActivity().runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                SingltonOtto.getInstance().post(new EventShowImage(imageUrl));
+                            }
+                        });
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(timerTask, 5000, 5000);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        Log.d(LOG, "setUserVisibleHint isVisibleToUser: " + isVisibleToUser);
+        super.setUserVisibleHint(isVisibleToUser);
     }
 
     private void performRequest(boolean forceLoad)
@@ -313,6 +383,7 @@ public class FragmentArticlesList extends Fragment
 
                 //update activities Map of articles;
                 SingltonOtto.getInstance().post(new EventArtsReceived(url, articles));
+                setTimer();
             }
             else
             {
