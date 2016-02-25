@@ -13,7 +13,7 @@ import ru.kuchanov.simplerssreader.utils.SingltonUIL;
  * Created by Юрий on 25.02.2016 22:29.
  * For SimpleRSSReader.
  */
-public class AnimationUtils
+public class MyAnimationUtils
 {
     public static void changeImageWithAlphaAnimation(final View coverThatChangesAlpha, final ImageView toolbarImage, final String imageUrl)
     {

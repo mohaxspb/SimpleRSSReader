@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
@@ -46,8 +48,7 @@ import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
-import ru.kuchanov.simplerssreader.utils.SingltonUIL;
-import ru.kuchanov.simplerssreader.utils.anim.AnimationUtils;
+import ru.kuchanov.simplerssreader.utils.anim.MyAnimationUtils;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -77,6 +78,41 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private ArrayList<RssChanel> chanels = new ArrayList<>();
 
+    private void startAnimation()
+    {
+        toolbarImage.setVisibility(View.VISIBLE);
+
+        toolbarImage.setScaleX(1.3f);
+        toolbarImage.setScaleY(1.3f);
+
+        final int animResId = R.anim.translate_square;
+
+        Animation anim = AnimationUtils.loadAnimation(this, animResId);
+        anim.setAnimationListener(new Animation.AnimationListener()
+        {
+
+            @Override
+            public void onAnimationEnd(Animation arg0)
+            {
+                Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
+                anim.setAnimationListener(this);
+                toolbarImage.startAnimation(anim);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0)
+            {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0)
+            {
+            }
+        });
+
+        toolbarImage.startAnimation(anim);
+    }
+
     @Subscribe
     public void updateAllArtsMap(EventArtsReceived eventArtsReceived)
     {
@@ -90,17 +126,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     @Subscribe
     public void updateImage(EventShowImage eventShowImage)
     {
-        Log.d(LOG, "updateImage called");
+//        Log.d(LOG, "updateImage called");
         String imageUrl = eventShowImage.getImageUrl();
-//        if (imageUrl == null)
-//        {
-//            cover.setAlpha(0f);
-//            toolbarImage.setImageResource(R.drawable.ic_rss_feed_blue_grey_500_48dp);
-//            return;
-//        }
-//        cover.setAlpha(0f);
-//        SingltonUIL.getInstance().displayImage(imageUrl, toolbarImage);
-        AnimationUtils.changeImageWithAlphaAnimation(cover, toolbarImage, imageUrl);
+        MyAnimationUtils.changeImageWithAlphaAnimation(cover, toolbarImage, imageUrl);
     }
 
     @Override
@@ -196,6 +224,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         initializeViews();
         //setup drawer, toolbar, drawerToggle and navigationView listener
         setUpNavigationDrawer();
+
+        startAnimation();
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }

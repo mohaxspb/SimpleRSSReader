@@ -215,7 +215,7 @@ public class FragmentArticlesList extends Fragment
                     //get new article with image
                     if (getUserVisibleHint())
                     {
-                        Log.d(LOG, "timerTask run called");
+//                        Log.d(LOG, "timerTask run called");
                         ArrayList<String> imageUrls = new ArrayList<>();
                         final String imageUrl;// = null;
                         for (Article a : articles)
@@ -238,7 +238,7 @@ public class FragmentArticlesList extends Fragment
                     }
                 }
             };
-            timer.scheduleAtFixedRate(timerTask, 5000, 5000);
+            timer.scheduleAtFixedRate(timerTask, 0, 5000);
         }
     }
 
