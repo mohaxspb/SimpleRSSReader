@@ -195,6 +195,8 @@ public class FragmentArticlesList extends Fragment
         {
             timerTask.cancel();
             timer.cancel();
+            timer=null;
+            timerTask=null;
         }
     }
 

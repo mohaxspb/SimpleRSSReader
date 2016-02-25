@@ -47,6 +47,7 @@ import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
 import ru.kuchanov.simplerssreader.utils.SingltonUIL;
+import ru.kuchanov.simplerssreader.utils.anim.AnimationUtils;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -91,20 +92,21 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     {
         Log.d(LOG, "updateImage called");
         String imageUrl = eventShowImage.getImageUrl();
-        if (imageUrl == null)
-        {
-            //TODO set default image
-            cover.setAlpha(0f);
-            toolbarImage.setImageResource(R.drawable.ic_rss_feed_blue_grey_500_48dp);
-            return;
-        }
-        cover.setAlpha(0f);
-        SingltonUIL.getInstance().displayImage(imageUrl, toolbarImage);
+//        if (imageUrl == null)
+//        {
+//            cover.setAlpha(0f);
+//            toolbarImage.setImageResource(R.drawable.ic_rss_feed_blue_grey_500_48dp);
+//            return;
+//        }
+//        cover.setAlpha(0f);
+//        SingltonUIL.getInstance().displayImage(imageUrl, toolbarImage);
+        AnimationUtils.changeImageWithAlphaAnimation(cover, toolbarImage, imageUrl);
     }
 
     @Override
     protected void onStop()
     {
+//        Log.d(LOG, "onStop called!");
         super.onStop();
 
         SingltonOtto.getInstance().unregister(this);
@@ -167,18 +169,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_CUR_NAV_ITEM_SELECTED_ID, currentSelectedNavItemsId);
-    }
-
-    private void restoreState(Bundle savedInstanceState, Bundle intentExtras)
-    {
-        if (savedInstanceState == null)
-        {
-            //TODO
-        }
-        else
-        {
-            currentSelectedNavItemsId = savedInstanceState.getInt(KEY_CUR_NAV_ITEM_SELECTED_ID);
-        }
     }
 
     @Override
@@ -334,8 +324,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
         else
         {
-//            pager.setAdapter(null);
-//            pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
             pager.getAdapter().notifyDataSetChanged();
         }
 

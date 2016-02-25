@@ -44,7 +44,7 @@
                     android:id="@+id/cover"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/material_red_500"
+                    android:background="?colorAccent"
                     android:fitsSystemWindows="true"
                     app:layout_collapseMode="parallax"/>
 
