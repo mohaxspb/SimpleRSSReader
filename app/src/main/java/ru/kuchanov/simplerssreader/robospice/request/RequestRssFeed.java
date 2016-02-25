@@ -18,7 +18,7 @@ import java.util.Date;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.utils.RssParser;
 
@@ -29,7 +29,7 @@ import ru.kuchanov.simplerssreader.utils.RssParser;
 public class RequestRssFeed extends SpiceRequest<ArticlesList>
 {
     private String LOG = RequestRssFeed.class.getSimpleName();
-    private MyRoboSpiceDatabaseHelper1 databaseHelper;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
     private boolean isTestRequest = false;
 
@@ -39,7 +39,7 @@ public class RequestRssFeed extends SpiceRequest<ArticlesList>
 
         this.url = rssUrl;
         this.LOG += "#" + url;
-        databaseHelper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
     }
 
     public void setTestRssChanel()

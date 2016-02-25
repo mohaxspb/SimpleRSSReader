@@ -38,7 +38,7 @@ import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
@@ -280,7 +280,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     public ArrayList<RssChanel> getAllRssChanels()
     {
-        MyRoboSpiceDatabaseHelper1 databaseHelper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
         chanels.clear();
         try
         {
@@ -465,11 +465,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
                 return true;
             case R.id.delete_arts:
-                MyRoboSpiceDatabaseHelper1 helper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+                MyRoboSpiceDatabaseHelper helper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
                 ArticleRssChanel.deleteSomeArts(5, "http://www.vestifinance.ru/yandex.xml", helper);
                 break;
             case R.id.get_db:
-                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME);
+                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
                 break;
         }
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 
 /**
@@ -20,7 +20,7 @@ import ru.kuchanov.simplerssreader.db.RssChanel;
 public class RequestRssFeedOffline extends SpiceRequest<ArticlesList>
 {
     private String LOG = RequestRssFeedOffline.class.getSimpleName();
-    private MyRoboSpiceDatabaseHelper1 databaseHelper;
+    private MyRoboSpiceDatabaseHelper databaseHelper;
     private String url;
 
     public RequestRssFeedOffline(Context ctx, String rssUrl)
@@ -29,7 +29,7 @@ public class RequestRssFeedOffline extends SpiceRequest<ArticlesList>
 
         this.url = rssUrl;
         this.LOG += "#" + url;
-        databaseHelper = new MyRoboSpiceDatabaseHelper1(ctx, MyRoboSpiceDatabaseHelper1.DB_NAME, MyRoboSpiceDatabaseHelper1.DB_VERSION);
+        databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
     }
 
     @Override

@@ -75,6 +75,9 @@ public class Article implements Parcelable
     @DatabaseField
     private String categories;
 
+    @DatabaseField
+    private String videoUrl;
+
     /**
      * Parcel implementation
      */
@@ -94,6 +97,7 @@ public class Article implements Parcelable
 
         this.authors = in.readString();
         this.categories = in.readString();
+        this.videoUrl = in.readString();
     }
 
     /**
@@ -104,7 +108,7 @@ public class Article implements Parcelable
 
     }
 
-    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper1 helper)
+    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper helper)
     {
         ArrayList<Article> artsInDB = new ArrayList<>();
         for (Article article : loadedArts)
@@ -124,7 +128,7 @@ public class Article implements Parcelable
     /**
      * @return Article or null if cant find it by url
      */
-    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper1 helper)
+    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper helper)
     {
         Article a = null;
         try
@@ -167,6 +171,7 @@ public class Article implements Parcelable
 
         dest.writeString(authors);
         dest.writeString(categories);
+        dest.writeString(videoUrl);
     }
 
     public String getUrl()
@@ -279,6 +284,16 @@ public class Article implements Parcelable
         this.authors = authors;
     }
 
+    public String getVideoUrl()
+    {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl)
+    {
+        this.videoUrl = videoUrl;
+    }
+
     /**
      * need it to sort articles by date as we get them as unsorted Collection from ArticlesList result of RoboSpice request
      */
@@ -290,5 +305,4 @@ public class Article implements Parcelable
             return o2.getPubDate().compareTo(o1.getPubDate());
         }
     }
-
 }

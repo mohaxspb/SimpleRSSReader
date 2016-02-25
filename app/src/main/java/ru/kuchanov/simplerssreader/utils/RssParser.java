@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper1;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:23.
@@ -44,7 +44,7 @@ public class RssParser
      *
      * @throws Exception
      */
-    public static ArrayList<Article> parseRssFeed(Document document, MyRoboSpiceDatabaseHelper1 helper) throws Exception
+    public static ArrayList<Article> parseRssFeed(Document document, MyRoboSpiceDatabaseHelper helper) throws Exception
     {
         String channelTitle = document.getElementsByTag("channel").first().getElementsByTag("title").first().text();
         Log.d(LOG, "parseRssFeed called " + channelTitle);
@@ -130,18 +130,27 @@ public class RssParser
             {
                 articleText = content.text();
             }
+            //media (video)
+            String videoUrl = null;
+            Elements mediaEls = item.getElementsByTag("media:group");
+            if (mediaEls.size() > 0)
+            {
+                Element media = mediaEls.first();
+                Element mediaContent = media.getElementsByTag("media:content").first();
+                videoUrl = mediaContent.attr("url");
+            }
+
+
             Article article = new Article();
             article.setTitle(title);
             article.setUrl(link);
             article.setPreview(preview);
             article.setPubDate(pubDate);
             article.setImageUrls(imagesUrls);
-            if (articleText != null)
-            {
-                article.setText(articleText);
-            }
+            article.setText(articleText);
             article.setCategories(categories);
             article.setAuthors(author);
+            article.setVideoUrl(videoUrl);
 
             articleArrayList.add(article);
         }
