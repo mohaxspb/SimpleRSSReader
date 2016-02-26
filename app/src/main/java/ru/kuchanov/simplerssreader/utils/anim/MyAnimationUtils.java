@@ -1,12 +1,16 @@
 package ru.kuchanov.simplerssreader.utils.anim;
 
 import android.animation.Animator;
+import android.content.Context;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import java.util.ArrayList;
 
 import ru.kuchanov.simplerssreader.R;
+import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.utils.SingltonUIL;
 
 /**
@@ -80,5 +84,40 @@ public class MyAnimationUtils
 
             }
         });
+    }
+
+    public static void startTranslateAnimation(final Context ctx, final ImageView toolbarImage)
+    {
+        toolbarImage.setVisibility(View.VISIBLE);
+
+        toolbarImage.setScaleX(1.3f);
+        toolbarImage.setScaleY(1.3f);
+
+        final int animResId = R.anim.translate_square;
+
+        Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
+        anim.setAnimationListener(new Animation.AnimationListener()
+        {
+
+            @Override
+            public void onAnimationEnd(Animation arg0)
+            {
+                Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
+                anim.setAnimationListener(this);
+                toolbarImage.startAnimation(anim);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0)
+            {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0)
+            {
+            }
+        });
+
+        toolbarImage.startAnimation(anim);
     }
 }

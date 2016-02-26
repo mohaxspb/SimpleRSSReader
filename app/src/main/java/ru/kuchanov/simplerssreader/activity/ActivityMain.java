@@ -18,8 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
@@ -39,6 +37,7 @@ import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
+import ru.kuchanov.simplerssreader.fragment.FragmentDialogRemoveRss;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
 import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
@@ -75,40 +74,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private ArrayList<RssChanel> chanels = new ArrayList<>();
 
-    private void startAnimation()
-    {
-        toolbarImage.setVisibility(View.VISIBLE);
-
-        toolbarImage.setScaleX(1.3f);
-        toolbarImage.setScaleY(1.3f);
-
-        final int animResId = R.anim.translate_square;
-
-        Animation anim = AnimationUtils.loadAnimation(this, animResId);
-        anim.setAnimationListener(new Animation.AnimationListener()
-        {
-
-            @Override
-            public void onAnimationEnd(Animation arg0)
-            {
-                Animation anim = AnimationUtils.loadAnimation(ctx, animResId);
-                anim.setAnimationListener(this);
-                toolbarImage.startAnimation(anim);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation arg0)
-            {
-            }
-
-            @Override
-            public void onAnimationStart(Animation arg0)
-            {
-            }
-        });
-
-        toolbarImage.startAnimation(anim);
-    }
 
     @Subscribe
     public void updateAllArtsMap(EventArtsReceived eventArtsReceived)
@@ -222,7 +187,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         //setup drawer, toolbar, drawerToggle and navigationView listener
         setUpNavigationDrawer();
 
-        startAnimation();
+        MyAnimationUtils.startTranslateAnimation(ctx, toolbarImage);
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
@@ -231,17 +196,16 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
-//        appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         pager = (ViewPager) findViewById(R.id.pager);
 
-//        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
-
         toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
         cover = findViewById(R.id.cover);
-
+        //        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+//        appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
 //        fab = (FloatingActionButton) findViewById(R.id.fab);
     }
 
@@ -302,10 +266,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             menuIds.add(100 * i);
             navigationView.getMenu().add(0, menuIds.get(i), i, getAllRssChanels().get(i).getTitle());
         }
+        navigationView.getMenu().setGroupCheckable(0, true, true);
         //add btn for adding rssChanels
         menuIds.add(menuIds.size() * 100);
         navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Добавить Rss-ленту");
-        navigationView.getMenu().setGroupCheckable(0, true, true);
+        //add btn for removing rssChanels
+        menuIds.add(menuIds.size() * 100);
+        navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Удалить Rss-ленту");
 
         onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
@@ -318,28 +285,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 currentSelectedNavItemsId = menuIds.get(position);
                 navigationView.setCheckedItem(currentSelectedNavItemsId);
 
-                //TODO test imageChange
-                ArrayList<String> imageUrls = new ArrayList<>();
-                final String imageUrl;// = null;
-                ArrayList<Article> artsForRssFeed = allArticles.get(getAllRssChanels().get(position).getUrl());
-                if (artsForRssFeed != null)
-                {
-                    for (Article a : artsForRssFeed)
-                    {
-                        if (a.getImageUrls() != null)
-                        {
-                            String[] urls = a.getImageUrls().split(Const.DIVIDER);
-                            Collections.addAll(imageUrls, urls);
-                        }
-                    }
-                    imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
-                    updateImage(new EventShowImage(imageUrl));
-                }
-                else
-                {
-                    updateImage(new EventShowImage(null));
-                }
-                /////////////
+                String imageUrl = Article.getRandomImageUrlFromArticlesList(allArticles.get(getAllRssChanels().get(position).getUrl()));
+                updateImage(new EventShowImage(imageUrl));
+
                 super.onPageSelected(position);
             }
         };
@@ -363,11 +311,20 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             {
                 Log.i(LOG, "onNavigationItemSelected");
                 Log.d(LOG, "item.getItemId(): " + item.getItemId());
-                if (item.getItemId() == menuIds.get(menuIds.size() - 1))
+                //show add RSS dialog
+                if (item.getItemId() == menuIds.get(menuIds.size() - 2))
                 {
                     Log.d(LOG, item.getTitle().toString());
                     drawerLayout.closeDrawer(GravityCompat.START);
                     FragmentDialogAddRss.newInstance().show(getFragmentManager(), FragmentDialogAddRss.LOG);
+                    return false;
+                }
+                //show remove RSS dialog
+                if (item.getItemId() == menuIds.get(menuIds.size() - 1))
+                {
+                    Log.d(LOG, item.getTitle().toString());
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    FragmentDialogRemoveRss.newInstance().show(getFragmentManager(), FragmentDialogRemoveRss.LOG);
                     return false;
                 }
                 currentSelectedNavItemsId = item.getItemId();

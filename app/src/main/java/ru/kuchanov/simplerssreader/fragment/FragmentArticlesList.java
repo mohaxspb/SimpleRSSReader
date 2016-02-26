@@ -20,10 +20,8 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.kuchanov.simplerssreader.R;
@@ -38,7 +36,6 @@ import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
 import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeedOffline;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
-import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
 
 /**
@@ -65,7 +62,6 @@ public class FragmentArticlesList extends Fragment
     private boolean isLoading = false;
     private Timer timer;
     private TimerTask timerTask;
-    private int prevImagePositionInArticlesList = 0;
 
     public static Fragment newInstance(String url)
     {
@@ -195,8 +191,8 @@ public class FragmentArticlesList extends Fragment
         {
             timerTask.cancel();
             timer.cancel();
-            timer=null;
-            timerTask=null;
+            timer = null;
+            timerTask = null;
         }
     }
 
@@ -216,17 +212,7 @@ public class FragmentArticlesList extends Fragment
                     if (getUserVisibleHint())
                     {
 //                        Log.d(LOG, "timerTask run called");
-                        ArrayList<String> imageUrls = new ArrayList<>();
-                        final String imageUrl;// = null;
-                        for (Article a : articles)
-                        {
-                            if (a.getImageUrls() != null)
-                            {
-                                String[] urls = a.getImageUrls().split(Const.DIVIDER);
-                                Collections.addAll(imageUrls, urls);
-                            }
-                        }
-                        imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
+                        final String imageUrl = Article.getRandomImageUrlFromArticlesList(articles);
                         getActivity().runOnUiThread(new Runnable()
                         {
                             @Override

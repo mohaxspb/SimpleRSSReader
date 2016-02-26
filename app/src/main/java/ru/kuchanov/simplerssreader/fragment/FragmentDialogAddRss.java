@@ -138,6 +138,7 @@ public class FragmentDialogAddRss extends DialogFragment
                             helper.getDaoRssChanel().create(rssChanelToTEst);
                             Toast.makeText(ctx, "RSS-лента добавлена", Toast.LENGTH_SHORT).show();
                             //redraw navigationView
+                            //TODO swith by activity
                             try
                             {
                                 ActivityMain activity = (ActivityMain) ctx;

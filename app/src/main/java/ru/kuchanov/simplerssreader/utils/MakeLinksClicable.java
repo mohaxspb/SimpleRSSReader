@@ -32,11 +32,10 @@ public class MakeLinksClicable
 
         URLSpan[] urls = sp.getSpans(0, end, URLSpan.class);
         SpannableStringBuilder style = new SpannableStringBuilder(text);
-        //					style.clearSpans();//should clear old spans
         for (URLSpan url : urls)
         {
             style.removeSpan(url);
-            MakeLinksClicable.CustomerTextClick click = new MakeLinksClicable.CustomerTextClick(url.getURL());
+            SpanTextClick click = new SpanTextClick(url.getURL());
             style.setSpan(click, sp.getSpanStart(url), sp.getSpanEnd(url),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
@@ -70,11 +69,11 @@ public class MakeLinksClicable
         }
     }
 
-    public static class CustomerTextClick extends ClickableSpan
+    public static class SpanTextClick extends ClickableSpan
     {
         String url;
 
-        public CustomerTextClick(String url)
+        public SpanTextClick(String url)
         {
             this.url = url;
         }

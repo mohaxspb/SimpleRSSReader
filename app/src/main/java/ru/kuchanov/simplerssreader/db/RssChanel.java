@@ -103,6 +103,12 @@ public class RssChanel implements Parcelable
         return rssChanel;
     }
 
+    @Override
+    public String toString()
+    {
+        return this.getTitle();
+    }
+
     public int getId()
     {
         return id;

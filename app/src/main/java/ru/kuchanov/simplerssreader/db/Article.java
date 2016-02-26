@@ -9,8 +9,13 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Random;
+
+import ru.kuchanov.simplerssreader.otto.EventShowImage;
+import ru.kuchanov.simplerssreader.utils.Const;
 
 /**
  * Created by Юрий on 13.02.2016 21:13.
@@ -106,6 +111,30 @@ public class Article implements Parcelable
     public Article()
     {
 
+    }
+
+    /**
+     * @return random imageUrl or null if articles is null or there are no images in articles
+     */
+    public static String getRandomImageUrlFromArticlesList(ArrayList<Article> articles)
+    {
+        String imageUrl = null;
+
+        if (articles != null)
+        {
+            ArrayList<String> imageUrls = new ArrayList<>();
+            for (Article a : articles)
+            {
+                if (a.getImageUrls() != null)
+                {
+                    String[] urls = a.getImageUrls().split(Const.DIVIDER);
+                    Collections.addAll(imageUrls, urls);
+                }
+            }
+            imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
+        }
+
+        return imageUrl;
     }
 
     public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDataBaseHelper helper)
