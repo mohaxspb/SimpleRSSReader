@@ -41,7 +41,7 @@ public class ArticlesList
     @DatabaseField
     private String rssChanelTitle;
 
-    public static void deleteAllEntries(MyRoboSpiceDatabaseHelper h)
+    public static void deleteAllEntries(MyRoboSpiceDataBaseHelper h)
     {
         try
         {

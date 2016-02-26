@@ -15,7 +15,7 @@ import java.util.List;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:28.
@@ -54,7 +54,7 @@ public class HtmlSpiceServiceOffline extends SpiceService
         classCollection.add(ArticlesList.class);
 
         // init
-        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(application, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(application, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
         InDatabaseObjectPersisterFactory inDatabaseObjectPersisterFactory = new InDatabaseObjectPersisterFactory(application, databaseHelper, classCollection);
         cacheManager.addPersister(inDatabaseObjectPersisterFactory);
 

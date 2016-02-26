@@ -30,7 +30,7 @@ import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.activity.ActivityMain;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
@@ -53,7 +53,7 @@ public class FragmentDialogAddRss extends DialogFragment
     private RssChanel rssChanelToTEst;
     private MySpiceManager spiceManager;
     private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
-    private MyRoboSpiceDatabaseHelper helper;
+    private MyRoboSpiceDataBaseHelper helper;
     private MaterialDialog dialog;
 
     public static FragmentDialogAddRss newInstance()
@@ -76,7 +76,7 @@ public class FragmentDialogAddRss extends DialogFragment
         super.onCreate(savedState);
         Log.i(LOG, "onCreate");
         this.ctx = this.getActivity();
-        this.helper = new MyRoboSpiceDatabaseHelper(ctx);
+        this.helper = new MyRoboSpiceDataBaseHelper(ctx);
 
 //        this.pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         if (savedState != null)

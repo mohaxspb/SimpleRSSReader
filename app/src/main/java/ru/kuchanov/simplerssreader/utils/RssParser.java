@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 
 /**
  * Created by Юрий on 15.02.2016 16:23.
@@ -44,7 +44,7 @@ public class RssParser
      *
      * @throws Exception
      */
-    public static ArrayList<Article> parseRssFeed(Document document, MyRoboSpiceDatabaseHelper helper) throws Exception
+    public static ArrayList<Article> parseRssFeed(Document document, MyRoboSpiceDataBaseHelper helper) throws Exception
     {
         String channelTitle = document.getElementsByTag("channel").first().getElementsByTag("title").first().text();
         Log.d(LOG, "parseRssFeed called " + channelTitle);

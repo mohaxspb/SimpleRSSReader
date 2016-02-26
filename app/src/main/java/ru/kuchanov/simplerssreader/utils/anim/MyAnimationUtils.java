@@ -17,6 +17,8 @@ public class MyAnimationUtils
 {
     public static void changeImageWithAlphaAnimation(final View coverThatChangesAlpha, final ImageView toolbarImage, final String imageUrl)
     {
+        coverThatChangesAlpha.animate().cancel();
+
         coverThatChangesAlpha.animate().alpha(1).setDuration(600).setListener(new Animator.AnimatorListener()
         {
             @Override

@@ -63,7 +63,7 @@ public class RssChanel implements Parcelable
 
     }
 
-    public static RssChanel getRssChanelByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    public static RssChanel getRssChanelByUrl(String url, MyRoboSpiceDataBaseHelper helper)
     {
         RssChanel rssChanel = null;
 
@@ -83,7 +83,7 @@ public class RssChanel implements Parcelable
         return rssChanel;
     }
 
-    public static RssChanel getRssChanelByTitle(String title, MyRoboSpiceDatabaseHelper helper)
+    public static RssChanel getRssChanelByTitle(String title, MyRoboSpiceDataBaseHelper helper)
     {
         RssChanel rssChanel = null;
 

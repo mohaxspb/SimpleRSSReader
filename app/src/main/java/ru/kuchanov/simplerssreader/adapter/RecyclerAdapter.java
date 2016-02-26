@@ -109,6 +109,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.date.setText(date);
         //preview
         MyTextUtils.setTextToTextView(holder.preview, curArt.getPreview());
+
+        //start Article Activity
+        holder.rootView.setOnClickListener(new StartNewArticleOnClickListener(articles, position));
+        holder.title.setOnClickListener(new StartNewArticleOnClickListener(articles, position));
     }
 
     @Override
@@ -117,9 +121,29 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return articles.size();
     }
 
+    private static class StartNewArticleOnClickListener implements View.OnClickListener
+    {
+        private ArrayList<Article> articles;
+        private int position;
+
+        public StartNewArticleOnClickListener(ArrayList<Article> articles, int position)
+        {
+            this.articles = articles;
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+
+            Log.d(LOG, articles.get(position).getTitle() + " clicked!");
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
         public CardView cardView;
+        public LinearLayout rootView;
         public TextView title;
         public TextView date;
         public TextView preview;
@@ -129,6 +153,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         {
             super(v);
             cardView = (CardView) v;
+            rootView = (LinearLayout) v.findViewById(R.id.art_card_main_lin);
             title = (TextView) v.findViewById(R.id.title);
             date = (TextView) v.findViewById(R.id.date);
             preview = (TextView) v.findViewById(R.id.preview);

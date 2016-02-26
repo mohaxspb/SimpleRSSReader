@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -38,7 +36,7 @@ import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
-import ru.kuchanov.simplerssreader.db.MyRoboSpiceDatabaseHelper;
+import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
@@ -60,15 +58,14 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private Context ctx;
     private SharedPreferences pref;
 
-    private AppBarLayout appBar;
+    //    private AppBarLayout appBar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView navigationView;
-    private NavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener;
     private ViewPager pager;
     private ViewPager.OnPageChangeListener onPageChangeListener;
     private int currentSelectedNavItemsId = 0;
-    private CoordinatorLayout coordinatorLayout;
+    //    private CoordinatorLayout coordinatorLayout;
     private View cover;
     private ImageView toolbarImage;
 
@@ -234,13 +231,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
+//        appBar = (AppBarLayout) findViewById(R.id.app_bar_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         pager = (ViewPager) findViewById(R.id.pager);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+//        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
         toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
         cover = findViewById(R.id.cover);
@@ -280,7 +277,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     public ArrayList<RssChanel> getAllRssChanels()
     {
-        MyRoboSpiceDatabaseHelper databaseHelper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+        MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
         chanels.clear();
         try
         {
@@ -358,6 +355,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
 
 
+        NavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener;
         onNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
         {
             @Override
@@ -465,11 +463,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 this.pref.edit().putBoolean(getString(R.string.pref_design_key_night_mode), !nightModeIsOn).commit();
                 return true;
             case R.id.delete_arts:
-                MyRoboSpiceDatabaseHelper helper = new MyRoboSpiceDatabaseHelper(ctx, MyRoboSpiceDatabaseHelper.DB_NAME, MyRoboSpiceDatabaseHelper.DB_VERSION);
+                MyRoboSpiceDataBaseHelper helper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
                 ArticleRssChanel.deleteSomeArts(5, "http://www.vestifinance.ru/yandex.xml", helper);
                 break;
             case R.id.get_db:
-                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDatabaseHelper.DB_NAME);
+                DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDataBaseHelper.DB_NAME);
                 break;
         }
 

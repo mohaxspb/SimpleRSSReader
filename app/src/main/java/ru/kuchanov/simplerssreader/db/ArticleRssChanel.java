@@ -34,7 +34,7 @@ public class ArticleRssChanel
     @DatabaseField(columnName = FIELD_CATEGORY_ID)
     private int categoryId;
 
-    public static ArrayList<ArticleRssChanel> getArtRssByRssChanel(RssChanel rssChanel, MyRoboSpiceDatabaseHelper helper)
+    public static ArrayList<ArticleRssChanel> getArtRssByRssChanel(RssChanel rssChanel, MyRoboSpiceDataBaseHelper helper)
     {
         ArrayList<ArticleRssChanel> articleRssChanels = null;
 
@@ -59,7 +59,7 @@ public class ArticleRssChanel
         }
     }
 
-    public static void deleteSomeArts(int numOfArtsToDelete, String rssUrl, MyRoboSpiceDatabaseHelper helper)
+    public static void deleteSomeArts(int numOfArtsToDelete, String rssUrl, MyRoboSpiceDataBaseHelper helper)
     {
         try
         {
@@ -85,7 +85,7 @@ public class ArticleRssChanel
         }
     }
 
-    public static ArticleRssChanel getArtRssByArticleAndRssChanelIds(int articleId, int rssChanelId, MyRoboSpiceDatabaseHelper helper)
+    public static ArticleRssChanel getArtRssByArticleAndRssChanelIds(int articleId, int rssChanelId, MyRoboSpiceDataBaseHelper helper)
     {
         ArticleRssChanel articleRssChanel = null;
 
@@ -102,7 +102,7 @@ public class ArticleRssChanel
         return articleRssChanel;
     }
 
-    public static ArrayList<Article> getArticlesFromArtRss(ArrayList<ArticleRssChanel> articleRssChanels, MyRoboSpiceDatabaseHelper helper)
+    public static ArrayList<Article> getArticlesFromArtRss(ArrayList<ArticleRssChanel> articleRssChanels, MyRoboSpiceDataBaseHelper helper)
     {
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -125,7 +125,7 @@ public class ArticleRssChanel
     /**
      * @return num of new arts
      */
-    public static int writeToArtRssFeedTable(ArrayList<Article> articles, RssChanel rssChanel, MyRoboSpiceDatabaseHelper helper)
+    public static int writeToArtRssFeedTable(ArrayList<Article> articles, RssChanel rssChanel, MyRoboSpiceDataBaseHelper helper)
     {
         int numOfNewArts = 0;
 
@@ -160,7 +160,7 @@ public class ArticleRssChanel
         return numOfNewArts;
     }
 
-    public static ArticleRssChanel getArtRssByArtAndRss(Article article, RssChanel rssChanel, MyRoboSpiceDatabaseHelper helper)
+    public static ArticleRssChanel getArtRssByArtAndRss(Article article, RssChanel rssChanel, MyRoboSpiceDataBaseHelper helper)
     {
         ArticleRssChanel articleRssChanel = null;
 
@@ -176,7 +176,7 @@ public class ArticleRssChanel
         return articleRssChanel;
     }
 
-    public static boolean artByRssChanelExists(RssChanel rssChanel, MyRoboSpiceDatabaseHelper helper)
+    public static boolean artByRssChanelExists(RssChanel rssChanel, MyRoboSpiceDataBaseHelper helper)
     {
         boolean exists = false;
         try

@@ -108,7 +108,7 @@ public class Article implements Parcelable
 
     }
 
-    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDatabaseHelper helper)
+    public static ArrayList<Article> writeArtsToDB(ArrayList<Article> loadedArts, MyRoboSpiceDataBaseHelper helper)
     {
         ArrayList<Article> artsInDB = new ArrayList<>();
         for (Article article : loadedArts)
@@ -128,7 +128,7 @@ public class Article implements Parcelable
     /**
      * @return Article or null if cant find it by url
      */
-    public static Article getArticleByUrl(String url, MyRoboSpiceDatabaseHelper helper)
+    public static Article getArticleByUrl(String url, MyRoboSpiceDataBaseHelper helper)
     {
         Article a = null;
         try
