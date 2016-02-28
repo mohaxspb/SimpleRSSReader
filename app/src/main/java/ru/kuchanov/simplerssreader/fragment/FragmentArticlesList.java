@@ -228,12 +228,12 @@ public class FragmentArticlesList extends Fragment
         }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser)
-    {
-        Log.d(LOG, "setUserVisibleHint isVisibleToUser: " + isVisibleToUser);
-        super.setUserVisibleHint(isVisibleToUser);
-    }
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser)
+//    {
+//        Log.d(LOG, "setUserVisibleHint isVisibleToUser: " + isVisibleToUser);
+//        super.setUserVisibleHint(isVisibleToUser);
+//    }
 
     private void performRequest(boolean forceLoad)
     {

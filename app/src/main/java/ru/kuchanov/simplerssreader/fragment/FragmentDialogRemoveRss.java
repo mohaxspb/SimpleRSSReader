@@ -5,38 +5,18 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.Editable;
-import android.text.Html;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 import ru.kuchanov.simplerssreader.R;
-import ru.kuchanov.simplerssreader.activity.ActivityMain;
-import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.ArticlesList;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
-import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
-import ru.kuchanov.simplerssreader.robospice.request.RequestRssFeed;
-import ru.kuchanov.simplerssreader.utils.RssParser;
 
 /**
  * Created by Юрий on 21.02.2016 20:34.
@@ -46,12 +26,14 @@ public class FragmentDialogRemoveRss extends DialogFragment
 {
     public final static String LOG = FragmentDialogRemoveRss.class.getSimpleName();
     public static final String KEY_RSS_CHANELS = "KEY_RSS_CHANELS";
+    private static final String KEY_SELECTED_INDICES = "KEY_SELECTED_INDICES";
     private Context ctx;
     private ArrayList<RssChanel> rssChanels = new ArrayList<>();
     //    private MySpiceManager spiceManager;
 //    private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
     private MyRoboSpiceDataBaseHelper helper;
     private MaterialDialog dialog;
+    private Integer[] selectedIndices;
 
     public static FragmentDialogRemoveRss newInstance()
     {
@@ -61,16 +43,31 @@ public class FragmentDialogRemoveRss extends DialogFragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
+        Log.i(LOG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(KEY_RSS_CHANELS, rssChanels);
+        if (selectedIndices != null)
+        {
+            int[] unBoxedIntegerArray = new int[selectedIndices.length];
+            for (int i = 0; i < selectedIndices.length; i++)
+            {
+                Integer integer = selectedIndices[i];
+                unBoxedIntegerArray[i] = integer;
+            }
+            outState.putIntArray(KEY_SELECTED_INDICES, unBoxedIntegerArray);
+        }
+        else
+        {
+            outState.putIntArray(KEY_SELECTED_INDICES, null);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedState)
     {
-        super.onCreate(savedState);
         Log.i(LOG, "onCreate");
+        super.onCreate(savedState);
         this.ctx = this.getActivity();
         this.helper = new MyRoboSpiceDataBaseHelper(ctx);
     }
@@ -84,6 +81,16 @@ public class FragmentDialogRemoveRss extends DialogFragment
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RSS_CHANELS))
         {
             rssChanels = savedInstanceState.getParcelableArrayList(KEY_RSS_CHANELS);
+            int[] unBoxedIntegerArray = savedInstanceState.getIntArray(KEY_SELECTED_INDICES);
+            if (unBoxedIntegerArray != null)
+            {
+                selectedIndices = new Integer[unBoxedIntegerArray.length];
+                for (int i = 0; i < unBoxedIntegerArray.length; i++)
+                {
+                    Integer integer = unBoxedIntegerArray[i];
+                    selectedIndices[i] = integer;
+                }
+            }
         }
         else
         {
@@ -101,12 +108,14 @@ public class FragmentDialogRemoveRss extends DialogFragment
         builder.title("Удалить RSS-ленту")
                 .positiveText(R.string.close)
                 .items(rssChanels)
-                .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice()
+                .itemsCallbackMultiChoice(selectedIndices, new MaterialDialog.ListCallbackMultiChoice()
                 {
                     @Override
                     public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text)
                     {
                         Log.d(LOG, Arrays.toString(text));
+                        selectedIndices = which;
+                        Log.d(LOG, Arrays.toString(selectedIndices));
                         return false;
                     }
                 })
@@ -119,6 +128,7 @@ public class FragmentDialogRemoveRss extends DialogFragment
                     {
                         Integer[] selectedIndices = dialog.getSelectedIndices();
                         Log.d(LOG, Arrays.toString(selectedIndices));
+
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback()
@@ -129,15 +139,8 @@ public class FragmentDialogRemoveRss extends DialogFragment
                         dismiss();
                     }
                 });
-//                .customView(R.layout.fragment_dialog_test_rss_url, true);
 
         dialog = builder.build();
-
-//        View customView = dialog.getCustomView();
-//        if (customView == null)
-//        {
-//            return dialog;
-//        }
 
         Integer[] selectedIndices = dialog.getSelectedIndices();
         Log.d(LOG, Arrays.toString(selectedIndices));

@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.octo.android.robospice.request.SpiceRequest;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +12,9 @@ import org.jsoup.parser.Parser;
 import java.util.ArrayList;
 import java.util.Date;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.ArticlesList;
