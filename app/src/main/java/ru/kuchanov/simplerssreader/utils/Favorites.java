@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -29,7 +30,7 @@ public class Favorites
 
                 String url = "http://kuchanov.ru/scp/upload.php";
 
-                Request.Builder request = new Request.Builder();
+
 
                 String catsFavs = "авлоалво";
                 String artsFavs = "врылвра";
@@ -39,8 +40,9 @@ public class Favorites
                         .add("titles", artsFavs)
                         .build();
 
+                Request.Builder request = new Request.Builder();
                 request.post(formBody);
-                request.addHeader("Content-Type", "text/json; Charset=UTF-8");
+                request.addHeader("Content-Type", "text/application; Charset=UTF-8");
 
                 request.url(url);
                 try
@@ -59,4 +61,8 @@ public class Favorites
 
         thread.start();
     }
+
+    public static final MediaType MEDIA_TYPE_MARKDOWN
+            = MediaType.parse("text/x-markdown; charset=utf-8");
+
 }

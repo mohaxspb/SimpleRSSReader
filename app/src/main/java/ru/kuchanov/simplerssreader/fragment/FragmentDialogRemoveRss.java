@@ -17,6 +17,7 @@ import java.util.Arrays;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
+import ru.kuchanov.simplerssreader.utils.Favorites;
 
 /**
  * Created by Юрий on 21.02.2016 20:34.
@@ -87,10 +88,10 @@ public class FragmentDialogRemoveRss extends DialogFragment
                 selectedIndices = new Integer[unBoxedIntegerArray.length];
                 for (int i = 0; i < unBoxedIntegerArray.length; i++)
                 {
-                    Integer integer = unBoxedIntegerArray[i];
-                    selectedIndices[i] = integer;
+                    selectedIndices[i] = unBoxedIntegerArray[i];
                 }
             }
+            Log.d(LOG, Arrays.toString(selectedIndices));
         }
         else
         {
@@ -108,6 +109,7 @@ public class FragmentDialogRemoveRss extends DialogFragment
         builder.title("Удалить RSS-ленту")
                 .positiveText(R.string.close)
                 .items(rssChanels)
+                .alwaysCallMultiChoiceCallback()
                 .itemsCallbackMultiChoice(selectedIndices, new MaterialDialog.ListCallbackMultiChoice()
                 {
                     @Override
@@ -115,8 +117,8 @@ public class FragmentDialogRemoveRss extends DialogFragment
                     {
                         Log.d(LOG, Arrays.toString(text));
                         selectedIndices = which;
-                        Log.d(LOG, Arrays.toString(selectedIndices));
-                        return false;
+                        Log.d(LOG, "selectedIndices: " + Arrays.toString(selectedIndices));
+                        return true;
                     }
                 })
                 .autoDismiss(false)
@@ -126,9 +128,21 @@ public class FragmentDialogRemoveRss extends DialogFragment
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which)
                     {
-                        Integer[] selectedIndices = dialog.getSelectedIndices();
-                        Log.d(LOG, Arrays.toString(selectedIndices));
-
+                        Log.d(LOG, "selectedIndices: " + Arrays.toString(selectedIndices));
+                        ArrayList<RssChanel> rssChanelsToDelete = new ArrayList<>();
+                        for (int index : selectedIndices)
+                        {
+                            rssChanelsToDelete.add(rssChanels.get(index));
+                        }
+                        try
+                        {
+                            int deletedNum = helper.getDaoRssChanel().delete(rssChanelsToDelete);
+                            Log.d(LOG, "deletedNum: " + deletedNum);
+                        }
+                        catch (SQLException e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback()
@@ -142,8 +156,8 @@ public class FragmentDialogRemoveRss extends DialogFragment
 
         dialog = builder.build();
 
-        Integer[] selectedIndices = dialog.getSelectedIndices();
-        Log.d(LOG, Arrays.toString(selectedIndices));
+//        Integer[] selectedIndices = dialog.getSelectedIndices();
+        Log.d(LOG, "selectedIndices: " + Arrays.toString(selectedIndices));
 
         if (selectedIndices == null)
         {
