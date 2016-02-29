@@ -34,4 +34,13 @@ public class PagerAdapterMain extends FragmentStatePagerAdapter
     {
         return urls.size();
     }
+
+    /**
+     * need it to prevent not destroing fragment after redusing num of rssChanels;
+     */
+    @Override
+    public int getItemPosition(Object object)
+    {
+        return POSITION_NONE;
+    }
 }

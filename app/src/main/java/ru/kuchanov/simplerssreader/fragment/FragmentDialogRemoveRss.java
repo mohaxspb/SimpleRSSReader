@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import ru.kuchanov.simplerssreader.R;
+import ru.kuchanov.simplerssreader.activity.ActivityMain;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.utils.Favorites;
@@ -117,7 +118,8 @@ public class FragmentDialogRemoveRss extends DialogFragment
                     {
                         Log.d(LOG, Arrays.toString(text));
                         selectedIndices = which;
-                        Log.d(LOG, "selectedIndices: " + Arrays.toString(selectedIndices));
+//                        Log.d(LOG, "selectedIndices: " + ((selectedIndices != null) ? Arrays.toString(selectedIndices) : "null"));
+                        updateDeleteBtnState();
                         return true;
                     }
                 })
@@ -143,6 +145,19 @@ public class FragmentDialogRemoveRss extends DialogFragment
                         {
                             e.printStackTrace();
                         }
+
+                        //redraw navigationView
+                        //TODO swith by activity
+                        try
+                        {
+                            ActivityMain activity = (ActivityMain) ctx;
+                            activity.setUpNavigationViewAndViewPager();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        dismiss();
                     }
                 })
                 .onPositive(new MaterialDialog.SingleButtonCallback()
@@ -158,8 +173,14 @@ public class FragmentDialogRemoveRss extends DialogFragment
 
 //        Integer[] selectedIndices = dialog.getSelectedIndices();
         Log.d(LOG, "selectedIndices: " + Arrays.toString(selectedIndices));
+        updateDeleteBtnState();
 
-        if (selectedIndices == null)
+        return dialog;
+    }
+
+    private void updateDeleteBtnState()
+    {
+        if (selectedIndices == null || selectedIndices.length == 0)
         {
             dialog.getActionButton(DialogAction.NEUTRAL).setEnabled(false);
             dialog.getActionButton(DialogAction.NEUTRAL).setActivated(false);
@@ -169,7 +190,5 @@ public class FragmentDialogRemoveRss extends DialogFragment
             dialog.getActionButton(DialogAction.NEUTRAL).setEnabled(true);
             dialog.getActionButton(DialogAction.NEUTRAL).setActivated(true);
         }
-
-        return dialog;
     }
 }

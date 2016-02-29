@@ -103,9 +103,14 @@ public class FragmentDialogAddRss extends DialogFragment
                         if (!TextUtils.isEmpty(editText.getText()))
                         {
                             String enteredUrl = editText.getText().toString();
-                            //check for starting with http://
-                            if (!enteredUrl.startsWith("http://"))
+                            //check for starting with http:// or https://
+                            if (enteredUrl.startsWith("https://"))
                             {
+                                Log.e(LOG, "enteredUrl: enteredUrl.startsWith(\"https://\")");
+                            }
+                            if (!enteredUrl.startsWith("http://") && !enteredUrl.startsWith("https://"))
+                            {
+                                Log.e(LOG, "enteredUrl: " + enteredUrl);
                                 Toast.makeText(ctx, "Адрес должен начинаться с \"http://\"", Toast.LENGTH_SHORT).show();
                                 editText.requestFocus();
                                 return;
