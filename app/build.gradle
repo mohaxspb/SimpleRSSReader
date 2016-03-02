@@ -67,4 +67,8 @@ dependencies {
 //    repositories { mavenCentral() }
     //Otto
     compile 'com.squareup:otto:1.3.8'
+    //vk
+    compile 'com.vk:androidsdk:+'
+    //ads
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
 }

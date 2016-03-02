@@ -33,6 +33,18 @@ public class SingltonUIL
         }
     }
 
+    public static DisplayImageOptions getRoundVKAvatarOptions(Context act)
+    {
+
+        return new DisplayImageOptions.Builder()
+                .displayer(new RoundedBitmapDisplayer((int) DipToPx.convert(56, act)))
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
+    }
+
     public static ImageLoader getInstance()
     {
         return ourInstance;

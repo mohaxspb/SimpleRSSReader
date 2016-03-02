@@ -104,7 +104,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         //title
         MyTextUtils.setTextToTextView(holder.title, curArt.getTitle());
         //date
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm, d MMM yyyy", Locale.getDefault());
         String date = dateFormat.format(curArt.getPubDate());
         holder.date.setText(date);
         //preview
@@ -135,7 +135,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         @Override
         public void onClick(View v)
         {
-
             Log.d(LOG, articles.get(position).getTitle() + " clicked!");
         }
     }

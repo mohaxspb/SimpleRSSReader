@@ -1,10 +1,12 @@
 package ru.kuchanov.simplerssreader.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +22,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.squareup.otto.Subscribe;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
 
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -45,6 +53,8 @@ import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
+import ru.kuchanov.simplerssreader.utils.VKUtils;
+import ru.kuchanov.simplerssreader.utils.ads.MD5;
 import ru.kuchanov.simplerssreader.utils.anim.MyAnimationUtils;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
@@ -188,6 +198,22 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         setUpNavigationDrawer();
 
         MyAnimationUtils.startTranslateAnimation(ctx, toolbarImage);
+
+        VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
+        //admob
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest.Builder builder;
+        builder = new AdRequest.Builder();
+        String androidId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceId = MD5.convert(androidId);
+        if(deviceId!=null)
+        {
+            builder.addTestDevice(deviceId.toUpperCase());
+        }
+        AdRequest adRequest = builder.build();
+        boolean isTestDevice = adRequest.isTestDevice(ctx);
+        Log.v(LOG, "is Admob Test Device ? " + deviceId + " " + isTestDevice);
+        mAdView.loadAd(adRequest);
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
@@ -451,6 +477,31 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         {
             super.onBackPressed();
 
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>()
+        {
+            @Override
+            public void onResult(VKAccessToken res)
+            {
+                // Пользователь успешно авторизовался
+                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
+//                new Targeting_402.SocialNetworkAccess().passTokenData(Targeting_402.SocialNetworkAccess.SocialNetwork.VK, res.accessToken, res.userId);
+            }
+
+            @Override
+            public void onError(VKError error)
+            {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
+            }
+        }))
+        {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

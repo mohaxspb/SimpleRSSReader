@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="164dp"
+    android:background="@drawable/drawer_header">
+
+    <TextView
+        android:id="@+id/vk_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/material_blue_grey_50"
+        android:textSize="19sp"/>
+
+    <ImageView
+        android:id="@+id/vk_avatar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_above="@id/vk_name"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_rss_feed_blue_grey_500_48dp"/>
+
+    <ImageView
+        android:id="@+id/logout"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@id/vk_avatar"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_exit_to_app_white_48dp"/>
+</RelativeLayout>
