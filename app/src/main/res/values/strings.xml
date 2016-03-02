@@ -11,6 +11,7 @@
     <string name="pref_vk_surname">pref_vk_surname</string>
     <string name="pref_vk_avatar">pref_vk_avatar</string>
     <string name="pref_vk">pref_vk</string>
+    <integer name="com_vk_sdk_AppId">5330190</integer>
     <string name="admob_bottom_banner_id">ca-app-pub-2231528705144312/4089625786</string>
     <string name="unloged_dialog_title">Необходима авторизация</string>
     <string name="login_please">Авторизоваться\nУбрать банер!</string>

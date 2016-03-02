@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
+import com.vk.sdk.util.VKUtil;
 
 import ru.kuchanov.simplerssreader.R;
 
@@ -29,6 +31,8 @@ import ru.kuchanov.simplerssreader.R;
  */
 public class VKUtils
 {
+    private static final String LOG = VKUtils.class.getSimpleName();
+
     public static void showLoginDialog(final Context ctx, String messege)
     {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
@@ -55,12 +59,14 @@ public class VKUtils
         dialog.show();
     }
 
+    public static void printCertificateFingerprint(AppCompatActivity act)
+    {
+        String[] fingerprints = VKUtil.getCertificateFingerprint(act, act.getPackageName());
+        Log.d(LOG, "fingerprints: " + fingerprints[0]);
+    }
+
     public static void checkVKAuth(final AppCompatActivity activity, final NavigationView navigationView)
     {
-        if(1!=0)
-        {
-            return;
-        }
         if (VKSdk.isLoggedIn())
         {
             /*Удаление банера*/

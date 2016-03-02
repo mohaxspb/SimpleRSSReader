@@ -16,12 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/My.Theme.Light">
 
-        <activity android:name=".activity.ActivityMain">
+        <activity
+            android:name=".activity.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.vk.sdk.VKServiceActivity"
+            android:label="ServiceActivity"
+            android:theme="@style/VK.Transparent" />
 
         <service
             android:name=".robospice.HtmlSpiceService"

@@ -42,7 +42,7 @@ public class MyApplication extends Application
         SingltonOtto.initInstance();
 
         //VK SDK
-//        vkAccessTokenTracker.startTracking();
-//        VKSdk.initialize(getApplicationContext());
+        vkAccessTokenTracker.startTracking();
+        VKSdk.initialize(getApplicationContext());
     }
 }
