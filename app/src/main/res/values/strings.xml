@@ -6,7 +6,7 @@
     <string name="enter_rss_url">Введите URL адрес RSS-ленты</string>
     <string name="add">Добавить</string>
     <string name="remove_selected">Удалить выбранные</string>
-    <string name="login_advantages">Авторизовавшись вы сможете сохранить список ваших RSS лент в облако и пользоваться ими на разных устройствах.\\nТакже это отключит рекламный баннер.</string>
+    <string name="login_advantages">Авторизовавшись вы сможете сохранить список ваших RSS лент в облако и пользоваться ими на разных устройствах.\nТакже это отключит рекламный баннер.</string>
     <string name="pref_vk_name">pref_vk_name</string>
     <string name="pref_vk_surname">pref_vk_surname</string>
     <string name="pref_vk_avatar">pref_vk_avatar</string>

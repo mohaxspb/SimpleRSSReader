@@ -1,8 +1,10 @@
 package ru.kuchanov.simplerssreader.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +28,7 @@ import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.MyApplication;
 import ru.kuchanov.simplerssreader.R;
+import ru.kuchanov.simplerssreader.activity.ActivityArticle;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
 import ru.kuchanov.simplerssreader.utils.Const;
@@ -65,9 +68,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         final Context ctx = holder.cardView.getContext();
         final Article curArt = articles.get(position);
 
-         int textSizeLarge;
-         int textSizePrimary;
-         int textSizeSecondary;
+        int textSizeLarge;
+        int textSizePrimary;
+        int textSizeSecondary;
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
         textSizeLarge = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
@@ -156,6 +159,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         public void onClick(View v)
         {
             Log.d(LOG, articles.get(position).getTitle() + " clicked!");
+            Context ctx = v.getContext();
+            Intent intent = new Intent(ctx, ActivityArticle.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(Article.LOG, articles);
+            intent.putExtras(bundle);
+            ctx.startActivity(intent);
         }
     }
 
