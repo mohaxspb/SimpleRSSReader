@@ -1,7 +1,9 @@
 package ru.kuchanov.simplerssreader.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -42,7 +44,7 @@ import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
  * Created by Юрий on 12.02.2016 18:07.
  * For SimpleRSSReader.
  */
-public class FragmentArticlesList extends Fragment
+public class FragmentArticlesList extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     private static final String KEY_RSS_URL = "KEY_RSS_URL";
     private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
@@ -96,6 +98,9 @@ public class FragmentArticlesList extends Fragment
             articles = savedInstanceState.getParcelableArrayList(Article.LOG);
             isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
         }
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Nullable
@@ -234,6 +239,19 @@ public class FragmentArticlesList extends Fragment
 //        Log.d(LOG, "setUserVisibleHint isVisibleToUser: " + isVisibleToUser);
 //        super.setUserVisibleHint(isVisibleToUser);
 //    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        if (!isAdded())
+        {
+            return;
+        }
+        if (key.equals(getString(R.string.pref_design_key_text_size_ui)))
+        {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
 
     private void performRequest(boolean forceLoad)
     {

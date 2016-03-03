@@ -46,6 +46,7 @@ import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogRemoveRss;
+import ru.kuchanov.simplerssreader.fragment.FragmentDialogTextAppearance;
 import ru.kuchanov.simplerssreader.otto.EventArtsReceived;
 import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
@@ -457,6 +458,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             case R.id.get_db:
                 DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDataBaseHelper.DB_NAME);
                 break;
+            case R.id.text_size:
+                FragmentDialogTextAppearance textAppearance = FragmentDialogTextAppearance.newInstance();
+                textAppearance.show(getFragmentManager(), FragmentDialogTextAppearance.LOG);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

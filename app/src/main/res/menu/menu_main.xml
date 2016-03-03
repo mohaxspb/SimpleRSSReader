@@ -12,6 +12,11 @@
             app:showAsAction="never"/>
     </group>
     <item
+        android:id="@+id/text_size"
+        android:icon="?textSizeIcon"
+        app:showAsAction="never"
+        android:title="@string/text_size_title"/>
+    <item
         android:id="@+id/delete_arts"
         android:icon="@mipmap/ic_launcher"
         android:orderInCategory="200"

@@ -1,10 +1,13 @@
 package ru.kuchanov.simplerssreader.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +44,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     private ArrayList<Article> articles;
 
+
     public RecyclerAdapter(ArrayList<Article> dataset)
     {
         articles = dataset;
@@ -60,6 +64,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //        holder.title.setText(articles.get(position).getTitle());
         final Context ctx = holder.cardView.getContext();
         final Article curArt = articles.get(position);
+
+         int textSizeLarge;
+         int textSizePrimary;
+         int textSizeSecondary;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
+        textSizeLarge = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
+
+        holder.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
+        holder.preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
+        holder.date.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeSecondary);
+
         //image
         final LinearLayout.LayoutParams paramsImage = (LinearLayout.LayoutParams) holder.image.getLayoutParams();
         if (curArt.getImageUrls() != null)

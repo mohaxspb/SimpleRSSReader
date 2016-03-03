@@ -33,7 +33,7 @@
 
         <!--icons-->
         <item name="textFormatIcon">@drawable/ic_text_format_blue_grey_600_48dp</item>
-        <item name="textSizeIcon">@drawable/ic_format_size_blue_grey_600_48dp</item>
+        <item name="textSizeIcon">@drawable/ic_text_fields_blue_grey_600_36dp</item>
         <item name="openInBrowserIcon">@drawable/ic_open_in_browser_blue_grey_600_48dp</item>
         <item name="mailToMeIcon">@drawable/ic_send_blue_grey_600_48dp</item>
         <item name="nightModeIcon">@drawable/ic_brightness_4_blue_grey_600_48dp</item>
@@ -64,7 +64,7 @@
         <item name="android:windowBackground">@color/my_material_blue_grey_900</item>
         <!--icons-->
         <item name="textFormatIcon">@drawable/ic_text_format_white_48dp</item>
-        <item name="textSizeIcon">@drawable/ic_format_size_white_48dp</item>
+        <item name="textSizeIcon">@drawable/ic_text_fields_white_36dp</item>
         <item name="openInBrowserIcon">@drawable/ic_open_in_browser_white_48dp</item>
         <item name="mailToMeIcon">@drawable/ic_send_white_48dp</item>
         <item name="nightModeIcon">@drawable/ic_brightness_4_white_48dp</item>
