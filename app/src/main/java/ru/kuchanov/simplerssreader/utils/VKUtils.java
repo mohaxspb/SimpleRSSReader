@@ -2,6 +2,7 @@ package ru.kuchanov.simplerssreader.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -62,7 +64,10 @@ public class VKUtils
     public static void printCertificateFingerprint(AppCompatActivity act)
     {
         String[] fingerprints = VKUtil.getCertificateFingerprint(act, act.getPackageName());
-        Log.d(LOG, "fingerprints: " + fingerprints[0]);
+        for(String fingerprint:fingerprints)
+        {
+            Log.d(LOG, "fingerprint: " + fingerprint);
+        }
     }
 
     public static void checkVKAuth(final AppCompatActivity activity, final NavigationView navigationView)
@@ -71,7 +76,8 @@ public class VKUtils
         {
             /*Удаление банера*/
             View banner = activity.findViewById(R.id.adView);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) banner.getLayoutParams();
+//            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) banner.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) banner.getLayoutParams();
             params.height = 0;
             banner.setLayoutParams(params);
             for (int i = 0; i < navigationView.getHeaderCount(); i++)
@@ -127,8 +133,9 @@ public class VKUtils
         else
         {
             View banner = activity.findViewById(R.id.adView);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) banner.getLayoutParams();
-            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) banner.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) banner.getLayoutParams();
+            params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
             for (int i = 0; i < navigationView.getHeaderCount(); i++)
             {
                 navigationView.removeHeaderView(navigationView.getHeaderView(i));

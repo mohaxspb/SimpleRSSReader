@@ -161,6 +161,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         {
             spiceManagerOffline.start(ctx);
         }
+
+//        VKUtils.printCertificateFingerprint(this);
     }
 
     @Override
@@ -206,14 +208,17 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         builder = new AdRequest.Builder();
         String androidId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceId = MD5.convert(androidId);
-        if(deviceId!=null)
+        if (deviceId != null)
         {
             builder.addTestDevice(deviceId.toUpperCase());
         }
         AdRequest adRequest = builder.build();
         boolean isTestDevice = adRequest.isTestDevice(ctx);
         Log.v(LOG, "is Admob Test Device ? " + deviceId + " " + isTestDevice);
-        mAdView.loadAd(adRequest);
+        if (mAdView != null)
+        {
+            mAdView.loadAd(adRequest);
+        }
 
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }

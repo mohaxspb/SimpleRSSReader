@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 import ru.kuchanov.simplerssreader.MyApplication;

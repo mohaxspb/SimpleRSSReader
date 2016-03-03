@@ -10,6 +10,7 @@ import com.vk.sdk.VKSdk;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
 import ru.kuchanov.simplerssreader.utils.SingltonUIL;
+import ru.kuchanov.simplerssreader.utils.VKUtils;
 
 /**
  * Created by Юрий on 15.02.2016 16:40.
