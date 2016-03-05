@@ -6,28 +6,11 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!-- <RelativeLayout
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">-->
-
-    <!--     <LinearLayout
-             android:fitsSystemWindows="true"
-             android:orientation="vertical"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">-->
-
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
-
-        <!--  <android.support.design.widget.CoordinatorLayout
-              android:id="@+id/coordinator"
-              android:fitsSystemWindows="true"
-              android:layout_width="match_parent"
-              android:layout_height="0dip"
-              android:layout_weight="1">-->
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar_layout"
@@ -90,6 +73,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center|bottom"
                 app:adSize="SMART_BANNER"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:adUnitId="@string/admob_bottom_banner_id"/>
 
             <android.support.v4.view.ViewPager
@@ -99,15 +83,9 @@
                 android:layout_above="@id/adView"
                 android:fitsSystemWindows="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-
         </RelativeLayout>
 
     </android.support.design.widget.CoordinatorLayout>
-
-
-    <!-- </LinearLayout>-->
-    <!--  </RelativeLayout>-->
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"

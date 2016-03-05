@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Random;
 
-import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.utils.Const;
 
 /**
@@ -134,6 +133,18 @@ public class Article implements Parcelable
             imageUrl = (imageUrls.size() != 0) ? imageUrls.get(new Random().nextInt(imageUrls.size())) : null;
         }
 
+        return imageUrl;
+    }
+
+    public static String getRandomImageUrlFromString(String urls)
+    {
+        String imageUrl = null;
+        if (urls != null)
+        {
+            String[] urlsArray = urls.split(Const.DIVIDER);
+            int randomIndex = new Random().nextInt(urlsArray.length);
+            imageUrl = urlsArray[randomIndex];
+        }
         return imageUrl;
     }
 

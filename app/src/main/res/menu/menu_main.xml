@@ -14,8 +14,8 @@
     <item
         android:id="@+id/text_size"
         android:icon="?textSizeIcon"
-        app:showAsAction="never"
-        android:title="@string/text_size_title"/>
+        android:title="@string/text_size_title"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/delete_arts"
         android:icon="@mipmap/ic_launcher"
@@ -27,5 +27,11 @@
         android:icon="@mipmap/ic_launcher"
         android:orderInCategory="300"
         android:title="DEBUG get DB to storage"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/call_in_app"
+        android:icon="@mipmap/ic_launcher"
+        android:orderInCategory="1000"
+        android:title="CALL INAPP"
         app:showAsAction="never"/>
 </menu>

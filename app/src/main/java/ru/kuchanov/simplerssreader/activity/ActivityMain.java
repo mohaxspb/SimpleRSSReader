@@ -1,10 +1,14 @@
 package ru.kuchanov.simplerssreader.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -22,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.squareup.otto.Subscribe;
@@ -30,9 +35,13 @@ import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,12 +71,26 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 {
     private final static String LOG = ActivityMain.class.getSimpleName();
     private final static String KEY_CUR_NAV_ITEM_SELECTED_ID = "KEY_CUR_NAV_ITEM_SELECTED_ID";
+    private IInAppBillingService mService;
+    private ServiceConnection mServiceConn = new ServiceConnection()
+    {
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            mService = null;
+        }
 
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            mService = IInAppBillingService.Stub.asInterface(service);
+            Log.d(LOG, "onServiceConnected");
+        }
+    };
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Context ctx;
     private SharedPreferences pref;
-
     //    private AppBarLayout appBar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -78,13 +101,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     //    private CoordinatorLayout coordinatorLayout;
     private View cover;
     private ImageView toolbarImage;
-
     private Map<String, ArrayList<Article>> allArticles = new HashMap<>();
-
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
     private ArrayList<RssChanel> chanels = new ArrayList<>();
-
 
     @Subscribe
     public void updateAllArtsMap(EventArtsReceived eventArtsReceived)
@@ -102,68 +122,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 //        Log.d(LOG, "updateImage called");
         String imageUrl = eventShowImage.getImageUrl();
         MyAnimationUtils.changeImageWithAlphaAnimation(cover, toolbarImage, imageUrl);
-    }
-
-    @Override
-    protected void onStop()
-    {
-//        Log.d(LOG, "onStop called!");
-        super.onStop();
-
-        SingltonOtto.getInstance().unregister(this);
-    }
-
-    @Override
-    protected void onStart()
-    {
-//        Log.d(LOG, "onStart called!");
-        super.onStart();
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-
-        SingltonOtto.getInstance().register(this);
-        ;
-    }
-
-    @Override
-    protected void onPause()
-    {
-//        Log.d(LOG, "onPause called!");
-        super.onPause();
-
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
-        }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
-        }
-    }
-
-    @Override
-    protected void onResume()
-    {
-//        Log.d(LOG, "onResume called!");
-        super.onResume();
-
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
-        }
-        if (!spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.start(ctx);
-        }
-
-//        VKUtils.printCertificateFingerprint(this);
     }
 
     @Override
@@ -220,8 +178,77 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         {
             mAdView.loadAd(adRequest);
         }
+        //connect InAppBillService
+        Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
 
+        //catch prefs changed events
         this.pref.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    private void getPricesFromGP()
+    {
+        ArrayList<String> skuList = new ArrayList<>();
+        skuList.add("full_version_subscription");
+        final Bundle querySkus = new Bundle();
+        querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
+
+        Thread thread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                Log.i(LOG, "run called");
+                try
+                {
+                    Bundle skuDetails = mService.getSkuDetails(3, getPackageName(), "subs", querySkus);
+
+                    int response = skuDetails.getInt("RESPONSE_CODE");
+                    if (response == 0)
+                    {
+                        ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
+                        String mPremiumUpgradePrice;
+
+                        Log.i(LOG, "responseList: "+ Arrays.toString(responseList.toArray()));
+
+                        for (String thisResponse : responseList)
+                        {
+
+                            Log.d(LOG, thisResponse);
+                            JSONObject object = new JSONObject(thisResponse);
+                            String sku = object.getString("productId");
+                            String price = object.getString("price");
+                            if (sku.equals("premiumUpgrade"))
+                            {
+                                mPremiumUpgradePrice = price;
+                                Log.d(LOG, "mPremiumUpgradePrice: " + mPremiumUpgradePrice);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Log.d(LOG, "response: " + response);
+                    }
+                }
+                catch (RemoteException | JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        thread.start();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (mService != null)
+        {
+            unbindService(mServiceConn);
+        }
     }
 
     private void initializeViews()
@@ -458,6 +485,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             case R.id.get_db:
                 DataBaseFileSaver.copyDatabase(ctx, MyRoboSpiceDataBaseHelper.DB_NAME);
                 break;
+            case R.id.call_in_app:
+                getPricesFromGP();
+                break;
             case R.id.text_size:
                 FragmentDialogTextAppearance textAppearance = FragmentDialogTextAppearance.newInstance();
                 textAppearance.show(getFragmentManager(), FragmentDialogTextAppearance.LOG);
@@ -512,6 +542,65 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }))
         {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    protected void onStop()
+    {
+//        Log.d(LOG, "onStop called!");
+        super.onStop();
+
+        SingltonOtto.getInstance().unregister(this);
+    }
+
+    @Override
+    protected void onStart()
+    {
+//        Log.d(LOG, "onStart called!");
+        super.onStart();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
+        }
+
+        SingltonOtto.getInstance().register(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+//        Log.d(LOG, "onPause called!");
+        super.onPause();
+
+        if (spiceManager.isStarted())
+        {
+            spiceManager.shouldStop();
+        }
+        if (spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.shouldStop();
+        }
+    }
+
+    @Override
+    protected void onResume()
+    {
+//        Log.d(LOG, "onResume called!");
+        super.onResume();
+
+        if (!spiceManager.isStarted())
+        {
+            spiceManager.start(ctx);
+        }
+        if (!spiceManagerOffline.isStarted())
+        {
+            spiceManagerOffline.start(ctx);
         }
     }
 }

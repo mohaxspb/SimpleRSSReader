@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
@@ -50,6 +51,7 @@ import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
+import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
 import ru.kuchanov.simplerssreader.utils.VKUtils;
 import ru.kuchanov.simplerssreader.utils.ads.MD5;
@@ -74,7 +76,7 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
     private View cover;
     private ImageView toolbarImage;
 
-    private Map<String, ArrayList<Article>> allArticles = new HashMap<>();
+    private ArrayList<Article> allArticles = new ArrayList<>();
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
@@ -82,13 +84,12 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
 
 
     @Subscribe
-    public void updateAllArtsMap(EventArtsReceived eventArtsReceived)
+    public void updateAllArts(EventArtsReceived eventArtsReceived)
     {
         Log.d(LOG, "updateAllArtsMap called");
-        String rssChanelUrl = eventArtsReceived.getRssChanelUrl();
         ArrayList<Article> articles = eventArtsReceived.getArts();
         Log.d(LOG, "articles.size() " + articles.size());
-        this.allArticles.put(rssChanelUrl, articles);
+        this.allArticles.addAll(articles);
     }
 
     @Subscribe
@@ -297,12 +298,13 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
             public void onPageSelected(int position)
             {
                 Log.d(LOG, "onPageSelected with position: " + position);
-                toolbar.setTitle(getAllRssChanels().get(position).getTitle());
-                collapsingToolbarLayout.setTitle(getAllRssChanels().get(position).getTitle());
+
+                toolbar.setTitle(allArticles.get(position).getTitle());
+                collapsingToolbarLayout.setTitle(allArticles.get(position).getTitle());
                 currentSelectedNavItemsId = menuIds.get(position);
                 navigationView.setCheckedItem(currentSelectedNavItemsId);
-
-                String imageUrl = Article.getRandomImageUrlFromArticlesList(allArticles.get(getAllRssChanels().get(position).getUrl()));
+                String allImages = allArticles.get(position).getImageUrls();
+                String imageUrl = Article.getRandomImageUrlFromString(allImages);
                 updateImage(new EventShowImage(imageUrl));
 
                 super.onPageSelected(position);
@@ -318,7 +320,6 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
         {
             pager.getAdapter().notifyDataSetChanged();
         }
-
 
         NavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener;
         onNavigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener()
@@ -348,9 +349,10 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
                 Log.d(LOG, "item.getItemId(): " + currentSelectedNavItemsId);
                 //if not last element (which is add new rss
                 //we must simple change viewPagers fragment
-                int indexInRSSList = menuIds.indexOf(currentSelectedNavItemsId);
-                onPageChangeListener.onPageSelected(indexInRSSList);
-                pager.setCurrentItem(indexInRSSList, true);
+//                int indexInRSSList = menuIds.indexOf(currentSelectedNavItemsId);
+//                onPageChangeListener.onPageSelected(indexInRSSList);
+//                pager.setCurrentItem(indexInRSSList, true);
+                //TODO start ActivityMain
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
