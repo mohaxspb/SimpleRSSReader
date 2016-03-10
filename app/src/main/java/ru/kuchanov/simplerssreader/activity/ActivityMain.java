@@ -1,11 +1,14 @@
 package ru.kuchanov.simplerssreader.activity;
 
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -25,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.google.android.gms.ads.AdRequest;
@@ -187,6 +191,89 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         this.pref.registerOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>()
+        {
+            @Override
+            public void onResult(VKAccessToken res)
+            {
+                // Пользователь успешно авторизовался
+                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
+//                new Targeting_402.SocialNetworkAccess().passTokenData(Targeting_402.SocialNetworkAccess.SocialNetwork.VK, res.accessToken, res.userId);
+            }
+
+            @Override
+            public void onError(VKError error)
+            {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
+            }
+        }))
+        {
+            if (requestCode == 1001)
+            {
+                int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+                String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+                String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+
+                if (resultCode == RESULT_OK)
+                {
+                    try
+                    {
+                        JSONObject jo = new JSONObject(purchaseData);
+                        String sku = jo.getString("productId");
+                        Log.d(LOG, "You have bought the " + sku + ". Excellent choice, adventurer !");
+                    }
+                    catch (JSONException e)
+                    {
+                        Log.d(LOG, "Failed to parse purchase data.");
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else
+            {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    private void buySubscription()
+    {
+        Thread thread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                Log.i(LOG, "run called");
+                try
+                {
+                    Bundle buyIntentBundle = mService.getBuyIntent(3,
+                            getPackageName(),
+                            "full_version_subscription",
+                            "subs",
+                            String.valueOf(System.currentTimeMillis()));
+
+                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+
+                    if (pendingIntent != null)
+                    {
+                        startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0);
+                    }
+                }
+                catch (RemoteException | IntentSender.SendIntentException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        thread.start();
+
+    }
+
     private void getPricesFromGP()
     {
         ArrayList<String> skuList = new ArrayList<>();
@@ -210,7 +297,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                         ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
                         String mPremiumUpgradePrice;
 
-                        Log.i(LOG, "responseList: "+ Arrays.toString(responseList.toArray()));
+                        Log.i(LOG, "responseList: " + Arrays.toString(responseList.toArray()));
 
                         for (String thisResponse : responseList)
                         {
@@ -241,15 +328,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         thread.start();
     }
 
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        if (mService != null)
-        {
-            unbindService(mServiceConn);
-        }
-    }
 
     private void initializeViews()
     {
@@ -488,6 +566,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             case R.id.call_in_app:
                 getPricesFromGP();
                 break;
+            case R.id.buy_subs:
+                buySubscription();
+                break;
             case R.id.text_size:
                 FragmentDialogTextAppearance textAppearance = FragmentDialogTextAppearance.newInstance();
                 textAppearance.show(getFragmentManager(), FragmentDialogTextAppearance.LOG);
@@ -520,87 +601,74 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>()
-        {
-            @Override
-            public void onResult(VKAccessToken res)
-            {
-                // Пользователь успешно авторизовался
-                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
-//                new Targeting_402.SocialNetworkAccess().passTokenData(Targeting_402.SocialNetworkAccess.SocialNetwork.VK, res.accessToken, res.userId);
-            }
 
-            @Override
-            public void onError(VKError error)
-            {
-                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
-                VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
-            }
-        }))
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
 
-    @Override
-    protected void onStop()
-    {
+        @Override
+        protected void onStop ()
+        {
 //        Log.d(LOG, "onStop called!");
-        super.onStop();
+            super.onStop();
 
-        SingltonOtto.getInstance().unregister(this);
-    }
+            SingltonOtto.getInstance().unregister(this);
+        }
 
-    @Override
-    protected void onStart()
-    {
+        @Override
+        protected void onStart ()
+        {
 //        Log.d(LOG, "onStart called!");
-        super.onStart();
+            super.onStart();
 
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
+            if (!spiceManager.isStarted())
+            {
+                spiceManager.start(ctx);
+            }
+            if (!spiceManagerOffline.isStarted())
+            {
+                spiceManagerOffline.start(ctx);
+            }
+
+            SingltonOtto.getInstance().register(this);
         }
-        if (!spiceManagerOffline.isStarted())
+
+        @Override
+        protected void onPause ()
         {
-            spiceManagerOffline.start(ctx);
-        }
-
-        SingltonOtto.getInstance().register(this);
-    }
-
-    @Override
-    protected void onPause()
-    {
 //        Log.d(LOG, "onPause called!");
-        super.onPause();
+            super.onPause();
 
-        if (spiceManager.isStarted())
-        {
-            spiceManager.shouldStop();
+            if (spiceManager.isStarted())
+            {
+                spiceManager.shouldStop();
+            }
+            if (spiceManagerOffline.isStarted())
+            {
+                spiceManagerOffline.shouldStop();
+            }
         }
-        if (spiceManagerOffline.isStarted())
-        {
-            spiceManagerOffline.shouldStop();
-        }
-    }
 
-    @Override
-    protected void onResume()
-    {
+        @Override
+        protected void onResume ()
+        {
 //        Log.d(LOG, "onResume called!");
-        super.onResume();
+            super.onResume();
 
-        if (!spiceManager.isStarted())
-        {
-            spiceManager.start(ctx);
+            if (!spiceManager.isStarted())
+            {
+                spiceManager.start(ctx);
+            }
+            if (!spiceManagerOffline.isStarted())
+            {
+                spiceManagerOffline.start(ctx);
+            }
         }
-        if (!spiceManagerOffline.isStarted())
+
+        @Override
+        protected void onDestroy ()
         {
-            spiceManagerOffline.start(ctx);
+            super.onDestroy();
+            if (mService != null)
+            {
+                unbindService(mServiceConn);
+            }
         }
     }
-}

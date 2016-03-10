@@ -34,4 +34,10 @@
         android:orderInCategory="1000"
         android:title="CALL INAPP"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/buy_subs"
+        android:icon="@mipmap/ic_launcher"
+        android:orderInCategory="1100"
+        android:title="BUY_SUBS"
+        app:showAsAction="never"/>
 </menu>

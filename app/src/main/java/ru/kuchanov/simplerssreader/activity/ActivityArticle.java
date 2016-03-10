@@ -33,16 +33,13 @@ import com.vk.sdk.api.VKError;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 import ru.kuchanov.simplerssreader.R;
-import ru.kuchanov.simplerssreader.adapter.PagerAdapterMain;
+import ru.kuchanov.simplerssreader.adapter.PagerAdapterArticle;
 import ru.kuchanov.simplerssreader.db.Article;
-import ru.kuchanov.simplerssreader.db.ArticleRssChanel;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
 import ru.kuchanov.simplerssreader.db.RssChanel;
+import ru.kuchanov.simplerssreader.fragment.FragmentArticlesList;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogAddRss;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogRemoveRss;
 import ru.kuchanov.simplerssreader.fragment.FragmentDialogTextAppearance;
@@ -51,8 +48,6 @@ import ru.kuchanov.simplerssreader.otto.EventShowImage;
 import ru.kuchanov.simplerssreader.otto.SingltonOtto;
 import ru.kuchanov.simplerssreader.robospice.MySpiceManager;
 import ru.kuchanov.simplerssreader.robospice.SingltonRoboSpice;
-import ru.kuchanov.simplerssreader.utils.Const;
-import ru.kuchanov.simplerssreader.utils.DataBaseFileSaver;
 import ru.kuchanov.simplerssreader.utils.VKUtils;
 import ru.kuchanov.simplerssreader.utils.ads.MD5;
 import ru.kuchanov.simplerssreader.utils.anim.MyAnimationUtils;
@@ -77,10 +72,11 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
     private ImageView toolbarImage;
 
     private ArrayList<Article> allArticles = new ArrayList<>();
+    private String rssUrl;
 
     private MySpiceManager spiceManager = SingltonRoboSpice.getInstance().getSpiceManager();
     private MySpiceManager spiceManagerOffline = SingltonRoboSpice.getInstance().getSpiceManagerOffline();
-    private ArrayList<RssChanel> chanels = new ArrayList<>();
+    private ArrayList<RssChanel> rssChanels = new ArrayList<>();
 
 
     @Subscribe
@@ -163,6 +159,8 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
     {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CUR_NAV_ITEM_SELECTED_ID, currentSelectedNavItemsId);
+        outState.putParcelableArrayList(Article.LOG, allArticles);
+        outState.putString(FragmentArticlesList.KEY_RSS_URL, rssUrl);
     }
 
     @Override
@@ -181,6 +179,17 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
         this.setTheme(themeId);
         //call super after setTheme to set it 0_0
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null)
+        {
+            this.allArticles = getIntent().getExtras().getParcelableArrayList(Article.LOG);
+            this.rssUrl = getIntent().getExtras().getString(FragmentArticlesList.KEY_RSS_URL);
+        }
+        else
+        {
+            this.allArticles = savedInstanceState.getParcelableArrayList(Article.LOG);
+            this.rssUrl = savedInstanceState.getString(FragmentArticlesList.KEY_RSS_URL);
+        }
 
         setContentView(R.layout.activity_main);
 
@@ -257,20 +266,33 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
         setUpNavigationViewAndViewPager();
     }
 
-    public ArrayList<RssChanel> getAllRssChanels()
+    //    public ArrayList<RssChanel> getAllRssChanels()
+//    {
+//        MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
+//        rssChanels.clear();
+//        try
+//        {
+//            rssChanels.addAll(databaseHelper.getDaoRssChanel().queryForAll());
+//        }
+//        catch (SQLException e)
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        return rssChanels;
+//    }
+    public void updateAllRssChanels()
     {
         MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
-        chanels.clear();
+        rssChanels.clear();
         try
         {
-            chanels.addAll(databaseHelper.getDaoRssChanel().queryForAll());
+            rssChanels.addAll(databaseHelper.getDaoRssChanel().queryForAll());
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
-
-        return chanels;
     }
 
     public void setUpNavigationViewAndViewPager()
@@ -279,18 +301,26 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
         //clear menu
         navigationView.getMenu().clear();
         //set items
-        for (int i = 0; i < getAllRssChanels().size(); i++)
+        //getChanels from DB
+        updateAllRssChanels();
+        for (int i = 0; i < rssChanels.size(); i++)
         {
             menuIds.add(100 * i);
-            navigationView.getMenu().add(0, menuIds.get(i), i, getAllRssChanels().get(i).getTitle());
+            navigationView.getMenu().add(0, menuIds.get(i), i, rssChanels.get(i).getTitle());
+            if (rssChanels.get(i).getUrl().equals(rssUrl))
+            {
+                currentSelectedNavItemsId = menuIds.get(i);
+            }
         }
         navigationView.getMenu().setGroupCheckable(0, true, true);
+        navigationView.setCheckedItem(currentSelectedNavItemsId);
         //add btn for adding rssChanels
         menuIds.add(menuIds.size() * 100);
         navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Добавить Rss-ленту");
         //add btn for removing rssChanels
         menuIds.add(menuIds.size() * 100);
         navigationView.getMenu().add(1, menuIds.get(menuIds.size() - 1), menuIds.size(), "Удалить Rss-ленту");
+
 
         onPageChangeListener = new ViewPager.SimpleOnPageChangeListener()
         {
@@ -301,8 +331,7 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
 
                 toolbar.setTitle(allArticles.get(position).getTitle());
                 collapsingToolbarLayout.setTitle(allArticles.get(position).getTitle());
-                currentSelectedNavItemsId = menuIds.get(position);
-                navigationView.setCheckedItem(currentSelectedNavItemsId);
+
                 String allImages = allArticles.get(position).getImageUrls();
                 String imageUrl = Article.getRandomImageUrlFromString(allImages);
                 updateImage(new EventShowImage(imageUrl));
@@ -314,7 +343,7 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
 
         if (pager.getAdapter() == null)
         {
-            pager.setAdapter(new PagerAdapterMain(getSupportFragmentManager(), getAllRssChanels()));
+            pager.setAdapter(new PagerAdapterArticle(getSupportFragmentManager(), allArticles));
         }
         else
         {

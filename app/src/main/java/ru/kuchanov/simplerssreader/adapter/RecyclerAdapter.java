@@ -22,20 +22,17 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Locale;
 
-import ru.kuchanov.simplerssreader.MyApplication;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.activity.ActivityArticle;
 import ru.kuchanov.simplerssreader.db.Article;
+import ru.kuchanov.simplerssreader.fragment.FragmentArticlesList;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
 import ru.kuchanov.simplerssreader.utils.Const;
 import ru.kuchanov.simplerssreader.utils.DipToPx;
 import ru.kuchanov.simplerssreader.utils.MyTextUtils;
 import ru.kuchanov.simplerssreader.utils.SingltonUIL;
-
 
 /**
  * Created by Юрий on 16.02.2016 17:47.
@@ -46,11 +43,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public static final String LOG = RecyclerAdapter.class.getSimpleName();
 
     private ArrayList<Article> articles;
+    private String rssUrl;
 
-
-    public RecyclerAdapter(ArrayList<Article> dataset)
+    public RecyclerAdapter(ArrayList<Article> dataset, String rssUrl)
     {
         articles = dataset;
+        this.rssUrl = rssUrl;
     }
 
     @Override
@@ -134,8 +132,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         MyTextUtils.setTextToTextView(holder.preview, curArt.getPreview());
 
         //start Article Activity
-        holder.rootView.setOnClickListener(new StartNewArticleOnClickListener(articles, position));
-        holder.title.setOnClickListener(new StartNewArticleOnClickListener(articles, position));
+        holder.rootView.setOnClickListener(new StartNewArticleOnClickListener(articles, position, rssUrl));
+        holder.title.setOnClickListener(new StartNewArticleOnClickListener(articles, position, rssUrl));
     }
 
     @Override
@@ -148,11 +146,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     {
         private ArrayList<Article> articles;
         private int position;
+        private String rssUrl;
 
-        public StartNewArticleOnClickListener(ArrayList<Article> articles, int position)
+        public StartNewArticleOnClickListener(ArrayList<Article> articles, int position, String rssUrl)
         {
             this.articles = articles;
             this.position = position;
+            this.rssUrl = rssUrl;
         }
 
         @Override
@@ -163,6 +163,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             Intent intent = new Intent(ctx, ActivityArticle.class);
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(Article.LOG, articles);
+            bundle.putString(FragmentArticlesList.KEY_RSS_URL, rssUrl);
             intent.putExtras(bundle);
             ctx.startActivity(intent);
         }

@@ -46,7 +46,7 @@ import ru.kuchanov.simplerssreader.utils.customization.SpacesItemDecoration;
  */
 public class FragmentArticlesList extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
-    private static final String KEY_RSS_URL = "KEY_RSS_URL";
+    public static final String KEY_RSS_URL = "KEY_RSS_URL";
     private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
     private String LOG = FragmentArticlesList.class.getSimpleName() + "#" + "NOT_SET_YET";
 
@@ -57,8 +57,7 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
     private MySpiceManager spiceManager;
     private MySpiceManager spiceManagerOffline;
 
-    private String url;
-
+    private String rssUrl;
     private ArrayList<Article> articles = new ArrayList<>();
     private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
     private boolean isLoading = false;
@@ -72,6 +71,11 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
         args.putString(KEY_RSS_URL, url);
         fragmentArticlesList.setArguments(args);
         return fragmentArticlesList;
+    }
+
+    public String getRssUrl()
+    {
+        return this.rssUrl;
     }
 
     @Override
@@ -90,8 +94,8 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        url = args.getString(KEY_RSS_URL);
-        LOG = getClass().getSimpleName() + "#" + url;
+        rssUrl = args.getString(KEY_RSS_URL);
+        LOG = getClass().getSimpleName() + "#" + rssUrl;
 
         if (savedInstanceState != null)
         {
@@ -135,7 +139,7 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
 
         if (articles.size() != 0)
         {
-            recyclerView.setAdapter(new RecyclerAdapter(articles));
+            recyclerView.setAdapter(new RecyclerAdapter(articles, rssUrl));
         }
 
         setLoading(isLoading);
@@ -258,12 +262,12 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
         setLoading(true);
         if (forceLoad)
         {
-            RequestRssFeed requestRssFeed = new RequestRssFeed(ctx, url);
+            RequestRssFeed requestRssFeed = new RequestRssFeed(ctx, rssUrl);
             spiceManager.execute(requestRssFeed, LOG, DurationInMillis.ALWAYS_EXPIRED, requestListener);
         }
         else
         {
-            RequestRssFeedOffline requestRssFeedOffline = new RequestRssFeedOffline(ctx, url);
+            RequestRssFeedOffline requestRssFeedOffline = new RequestRssFeedOffline(ctx, rssUrl);
             spiceManagerOffline.execute(requestRssFeedOffline, LOG, DurationInMillis.ALWAYS_EXPIRED, requestListener);
         }
     }
@@ -339,7 +343,7 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
 
                 if (recyclerView.getAdapter() == null)
                 {
-                    RecyclerAdapter adapter = new RecyclerAdapter(articles);
+                    RecyclerAdapter adapter = new RecyclerAdapter(articles, rssUrl);
                     recyclerView.setAdapter(adapter);
 
                     articles.clear();
@@ -388,7 +392,7 @@ public class FragmentArticlesList extends Fragment implements SharedPreferences.
                 setLoading(false);
 
                 //update activities Map of articles;
-                SingltonOtto.getInstance().post(new EventArtsReceived(url, articles));
+                SingltonOtto.getInstance().post(new EventArtsReceived(rssUrl, articles));
                 setTimer();
             }
             else

@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.db.MyRoboSpiceDataBaseHelper;
@@ -65,6 +66,7 @@ public class RssParser
 
             String title = item.getElementsByTag(TAG_TITLE).first().text();
             String preview = item.getElementsByTag(TAG_DESCRIPTION).first().text();
+//            Log.d(LOG, preview);
             String pubDateString = item.getElementsByTag(TAG_PUB_DATE).first().text();
             Date pubDate = new Date(0);
             try
@@ -121,14 +123,15 @@ public class RssParser
             //full text if is
             String articleText = null;
             Element fullTextEl = item.getElementsByTag(TAG_FULL_TEXT).first();
+
             if (fullTextEl != null)
             {
-                articleText = fullTextEl.text();
+                articleText = fullTextEl.html().replaceAll("(<\\!\\[CDATA\\[)|(\\]\\]>)","");
             }
             Element content = item.getElementsByTag(TAG_CONTENT_ENCODED).first();
             if (content != null)
             {
-                articleText = content.text();
+                articleText = content.html().replaceAll("(<\\!\\[CDATA\\[)|(\\]\\]>)","");
             }
             //media (video)
             String videoUrl = null;
@@ -139,7 +142,6 @@ public class RssParser
                 Element mediaContent = media.getElementsByTag("media:content").first();
                 videoUrl = mediaContent.attr("url");
             }
-
 
             Article article = new Article();
             article.setTitle(title);
