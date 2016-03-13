@@ -200,6 +200,10 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
 
         MyAnimationUtils.startTranslateAnimation(ctx, toolbarImage);
 
+        String allImages = allArticles.get(pager.getCurrentItem()).getImageUrls();
+        String imageUrl = Article.getRandomImageUrlFromString(allImages);
+        updateImage(new EventShowImage(imageUrl));
+
         VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
         //admob
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -266,21 +270,6 @@ public class ActivityArticle extends AppCompatActivity implements SharedPreferen
         setUpNavigationViewAndViewPager();
     }
 
-    //    public ArrayList<RssChanel> getAllRssChanels()
-//    {
-//        MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
-//        rssChanels.clear();
-//        try
-//        {
-//            rssChanels.addAll(databaseHelper.getDaoRssChanel().queryForAll());
-//        }
-//        catch (SQLException e)
-//        {
-//            e.printStackTrace();
-//        }
-//
-//        return rssChanels;
-//    }
     public void updateAllRssChanels()
     {
         MyRoboSpiceDataBaseHelper databaseHelper = new MyRoboSpiceDataBaseHelper(ctx, MyRoboSpiceDataBaseHelper.DB_NAME, MyRoboSpiceDataBaseHelper.DB_VERSION);
