@@ -2,8 +2,14 @@ package ru.kuchanov.simplerssreader.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -11,11 +17,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +33,7 @@ import java.util.Locale;
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
+import ru.kuchanov.simplerssreader.utils.DipToPx;
 import ru.kuchanov.simplerssreader.utils.MyTextUtils;
 
 /**
@@ -153,7 +163,62 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         if (article.getVideoUrl() != null)
         {
             //TODO show video
+            Log.i(LOG, "show video with url: " + article.getVideoUrl());
+            final VideoView videoView = new VideoView(ctx);
+//            videoView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.height = (int) DipToPx.convert(300, ctx);
+            params.gravity = Gravity.CENTER;
+            videoView.setLayoutParams(params);
+            MediaController mediaController = new MediaController(ctx);
+            mediaController.setAnchorView(videoView);
+            final Uri video = Uri.parse(article.getVideoUrl());
+            videoView.setMediaController(mediaController);
+            videoView.setVideoURI(video);
+//            videoView.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View v)
+//                {
+//                    if (videoView.isPlaying())
+//                    {
+//                        videoView.pause();
+//                    }
+//                    else
+//                    {
+//                        videoView.start();
+//                    }
+//                }
+//            });
 
+            videoView.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+            {
+                @Override
+                public void onPrepared(MediaPlayer mp)
+                {
+
+
+                    mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener()
+                    {
+                        @Override
+                        public void onVideoSizeChanged(MediaPlayer mp, int width, int height)
+                        {
+                /*
+                 * add media controller
+                 */
+                            MediaController mediaController = new MediaController(ctx);
+                            videoView.setMediaController(mediaController);
+                /*
+                 * and set its position on screen
+                 */
+                            mediaController.setAnchorView(videoView);
+                        }
+                    });
+                }
+            });
+
+            mainLinear.addView(videoView);
         }
 
         articleTextView = (TextView) layoutInflater.inflate(R.layout.article_text_view, mainLinear, false);
