@@ -17,6 +17,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import ru.kuchanov.simplerssreader.R;
 import ru.kuchanov.simplerssreader.db.Article;
 import ru.kuchanov.simplerssreader.utils.AttributeGetter;
@@ -30,19 +34,25 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 {
     //    private static final String KEY_URL = "KEY_URL";
     private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
-    TextView articleTextView;
+
     private String LOG = FragmentArticle.class.getSimpleName() + "#" + "NOT_SET_YET";
     private Context ctx;
+    private SharedPreferences pref;
     private SwipeRefreshLayout swipeRefreshLayout;
     private NestedScrollView nestedScrollView;
 
-//    private MySpiceManager spiceManager;
+    //    private MySpiceManager spiceManager;
 //    private MySpiceManager spiceManagerOffline;
     private LinearLayout mainLinear;
+    private TextView articleTextView;
+    private TextView titleTextView;
+    private TextView dateTextView;
     //    private String url;
     private Article article;
 
     private boolean isLoading = false;
+
+    private float articleTextScale;
     private int textSizeLarge;
     private int textSizePrimary;
     private int textSizeSecondary;
@@ -83,7 +93,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
             isLoading = savedInstanceState.getBoolean(KEY_IS_LOADING);
         }
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         pref.registerOnSharedPreferenceChangeListener(this);
 
         textSizeLarge = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
@@ -112,6 +122,18 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         nestedScrollView = (NestedScrollView) root.findViewById(R.id.nested_scroll_view);
 
         mainLinear = (LinearLayout) root.findViewById(R.id.main_container);
+        titleTextView = (TextView) root.findViewById(R.id.title);
+        dateTextView = (TextView) root.findViewById(R.id.date);
+
+        articleTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
+        titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizeLarge);
+        dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizeSecondary);
+
+
+        titleTextView.setText(Html.fromHtml(article.getTitle()));
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm, d MMM yyyy", Locale.getDefault());
+        String date = dateFormat.format(article.getPubDate());
+        dateTextView.setText(date);
 
         if (article.getText() != null)
         {
@@ -135,6 +157,7 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         }
 
         articleTextView = (TextView) layoutInflater.inflate(R.layout.article_text_view, mainLinear, false);
+        articleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
         mainLinear.addView(articleTextView);
 
         MyTextUtils.setTextToTextView(articleTextView, Html.fromHtml(article.getText()).toString());
@@ -191,8 +214,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         }
         if (key.equals(getString(R.string.pref_design_key_text_size_article)))
         {
-            float uiTextScale = sharedPreferences.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
-            articleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
+            articleTextScale = sharedPreferences.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
+            articleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
+            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizeLarge);
+            dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizeSecondary);
         }
     }
 
