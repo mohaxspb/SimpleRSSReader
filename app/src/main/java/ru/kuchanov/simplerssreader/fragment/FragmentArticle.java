@@ -10,6 +10,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,23 +30,22 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 {
     //    private static final String KEY_URL = "KEY_URL";
     private static final String KEY_IS_LOADING = "KEY_IS_LOADING";
+    TextView articleTextView;
     private String LOG = FragmentArticle.class.getSimpleName() + "#" + "NOT_SET_YET";
-
     private Context ctx;
     private SwipeRefreshLayout swipeRefreshLayout;
     private NestedScrollView nestedScrollView;
-    private LinearLayout mainLinear;
-//    private RecyclerView recyclerView;
 
 //    private MySpiceManager spiceManager;
 //    private MySpiceManager spiceManagerOffline;
-
+    private LinearLayout mainLinear;
     //    private String url;
     private Article article;
 
-    //    private ArrayList<Article> articles = new ArrayList<>();
-//    private ArticlesListRequestListener requestListener = new ArticlesListRequestListener();
     private boolean isLoading = false;
+    private int textSizeLarge;
+    private int textSizePrimary;
+    private int textSizeSecondary;
 //    private Timer timer;
 //    private TimerTask timerTask;
 
@@ -85,6 +85,10 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         pref.registerOnSharedPreferenceChangeListener(this);
+
+        textSizeLarge = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
     }
 
     @Nullable
@@ -109,19 +113,6 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         mainLinear = (LinearLayout) root.findViewById(R.id.main_container);
 
-
-//        recyclerView = (RecyclerView) root.findViewById(R.id.recycler);
-//
-//        recyclerView.addItemDecoration(new SpacesItemDecoration(0));
-//
-//        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-//
-//        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
-//        recyclerView.getItemAnimator().setAddDuration(500);
-//        recyclerView.getItemAnimator().setRemoveDuration(500);
-//        recyclerView.getItemAnimator().setMoveDuration(500);
-//        recyclerView.getItemAnimator().setChangeDuration(500);
-
         if (article.getText() != null)
         {
             //TODO show text
@@ -143,11 +134,12 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
 
         }
 
-        TextView articleTextView = (TextView) layoutInflater.inflate(R.layout.article_text_view, mainLinear, false);
+        articleTextView = (TextView) layoutInflater.inflate(R.layout.article_text_view, mainLinear, false);
         mainLinear.addView(articleTextView);
 
         MyTextUtils.setTextToTextView(articleTextView, Html.fromHtml(article.getText()).toString());
     }
+
 
     @Override
     public void onAttach(Context context)
@@ -197,10 +189,11 @@ public class FragmentArticle extends Fragment implements SharedPreferences.OnSha
         {
             return;
         }
-//        if (key.equals(getString(R.string.pref_design_key_text_size_ui)))
-//        {
-//            recyclerView.getAdapter().notifyDataSetChanged();
-//        }
+        if (key.equals(getString(R.string.pref_design_key_text_size_article)))
+        {
+            float uiTextScale = sharedPreferences.getFloat(ctx.getString(R.string.pref_design_key_text_size_article), 0.75f);
+            articleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
+        }
     }
 
     private void performRequest()
